@@ -28,6 +28,7 @@ public class Course {
 	private String name;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "lecturer_id")
 	private Lecturer lecturer;
 	
 	@ManyToMany(

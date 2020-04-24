@@ -24,8 +24,7 @@ public class Lecturer {
 	
 	private String lastName;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "lecturer_id")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "lecturer")
 	private List<Course> courses;
 
 	public String getFirstName() {
