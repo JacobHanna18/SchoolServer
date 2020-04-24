@@ -11,8 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "students")
 public class Student {
 	
 	@Id
@@ -23,7 +25,10 @@ public class Student {
 	
 	private String lastName;
 	
-	@ManyToMany
+	@ManyToMany(mappedBy = "students",
+			cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+			targetEntity = Course.class
+	)
 	private List<Course> courseList;
 
 	public int getId() {

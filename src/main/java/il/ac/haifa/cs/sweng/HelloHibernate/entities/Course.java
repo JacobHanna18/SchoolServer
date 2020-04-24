@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,24 +14,30 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "courses")
 public class Course {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
+	// Pay attention to this one: name is a reserved keyword in MySQL.
+	@Column(name = "course_name")
 	private String name;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "lecturer_id")
 	private Lecturer lecturer;
 	
-	@ManyToMany
+	@ManyToMany(
+				cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+				targetEntity = Student.class
+			)
 	@JoinTable(
-			name="Course_Student",
-			joinColumns = @JoinColumn(name = "course_id", referencedColumnName = "id"),
-			inverseJoinColumns = @JoinColumn(name = "student_id", referencedColumnName = "id")
+			name="courses_students",
+			joinColumns = @JoinColumn(name = "course_id"),
+			inverseJoinColumns = @JoinColumn(name = "student_id")
 	)
 	private List<Student> students;
 

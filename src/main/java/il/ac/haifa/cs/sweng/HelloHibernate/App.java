@@ -12,6 +12,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -50,15 +51,21 @@ public class App
 		session.save(gadi);
 		session.save(rachel);
 		
+		session.flush();
+		
 		Course dsOren = new Course("Data Structures", oren);
     	Course dsGadi = new Course("Data Structures for non-programmers", gadi);
     	Course osRachel = new Course("Operating Systems", rachel);
     	Course sciProgramming = new Course("Scientific Programming", rachel);
     	
+    	session.flush();
+    	
     	session.save(dsOren);
     	session.save(dsGadi);
     	session.save(osRachel);
     	session.save(sciProgramming);
+    	
+    	session.flush();
     	
     	Student haim = new Student("Haim", "Blabla");
     	haim.addCourses(dsOren, osRachel);
@@ -67,6 +74,8 @@ public class App
     	Student shlomi = new Student("Shlomi", "Ben Artzi");
     	shlomi.addCourses(dsGadi, osRachel);
     	session.save(shlomi);
+    	
+    	session.getTransaction().commit();
 	}
 	
 	public static <T> List<T> getAll(Class<T> object) {
@@ -83,7 +92,7 @@ public class App
     {
         try {
         	
-        	Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
+        	//Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
         	
         	SessionFactory sessionFactory = getSessionFactory();
         	session = sessionFactory.openSession();
