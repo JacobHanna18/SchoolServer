@@ -24,7 +24,9 @@ public class Lecturer {
 	
 	private String lastName;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "lecturer")
+	// Note that in this case, choosing CascadeType.ALL would mean that deleting a lecturer would also delete all his or her courses.
+	// This is a design choice, and may not be ideal.
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "lecturer")
 	private List<Course> courses;
 
 	public String getFirstName() {

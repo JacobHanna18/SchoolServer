@@ -27,7 +27,7 @@ public class Course {
 	@Column(name = "course_name")
 	private String name;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "lecturer_id")
 	private Lecturer lecturer;
 	
