@@ -54,7 +54,7 @@ public class Commands {
     String getGrades (String StudentID){
         Student s = App.session.get(Student.class,StudentID);
         System.out.println(1);
-        List<Grade> grades = s.Grades;
+        List<Grade> grades = s.getGrades();
         System.out.println(100);
         System.out.println(grades);
         System.out.println(grades.size());
