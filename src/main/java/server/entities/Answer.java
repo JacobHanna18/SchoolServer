@@ -20,4 +20,7 @@ public class Answer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Course_id")
     Course course;
+
+    public Answer() {
+    }
 }

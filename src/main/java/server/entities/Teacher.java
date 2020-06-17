@@ -14,4 +14,7 @@ public class Teacher extends  User{
         super(name, id, pass);
         this.Courses = null;
     }
+
+    public Teacher() {
+    }
 }

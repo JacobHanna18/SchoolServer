@@ -12,13 +12,14 @@ public class Student extends User {
     )
     List<Course> Courses;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "student")
-    List<Grade> Grades;
+    public List<Grade> Grades = new ArrayList<Grade>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "student")
     List<Answer> answers;
     public Student(String name, String id, String pass){
         super(name, id, pass);
-        this.Courses = null;
-        this.Grades = null;
+    }
+
+    public Student() {
     }
 }

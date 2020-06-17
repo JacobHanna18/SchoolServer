@@ -47,6 +47,13 @@ public class Course {
         this.grades = null;
     }
 
+    public Course() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
     public Subject getSubject() {
         return subject;
     }

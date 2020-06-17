@@ -10,4 +10,7 @@ public class Principle extends User {
     public Principle(String name, String id, String pass){
         super(name, id, pass);
     }
+
+    public Principle() {
+    }
 }

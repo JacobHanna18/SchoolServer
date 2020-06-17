@@ -16,4 +16,7 @@ public class Request {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Course_id")
     Course course;
+
+    public Request() {
+    }
 }

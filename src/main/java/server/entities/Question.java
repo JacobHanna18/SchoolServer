@@ -42,6 +42,9 @@ public class Question {
         this.exams = null;
     }
 
+    public Question() {
+    }
+
     public String getQ() {
         return Q;
     }

@@ -25,6 +25,9 @@ public class Exam {
         this.subject = subject;
     }
 
+    public Exam() {
+    }
+
     public List<Question> getQuestions() {
         return Questions;
     }

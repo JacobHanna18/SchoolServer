@@ -20,6 +20,9 @@ public class Grade {
     @JoinColumn(name = "Course_id")
     Course course;
 
+    public Grade() {
+    }
+
 
     public int getGrade() {
         return grade;
@@ -35,6 +38,7 @@ public class Grade {
 
     public void setStudent(Student student) {
         this.student = student;
+        student.Grades.add(this);
     }
 
     public Course getCourse() {
@@ -47,7 +51,7 @@ public class Grade {
 
     public Grade(int grade, Student student, Course course) {
         this.grade = grade;
-        this.student = student;
+        setStudent(student);
         this.course = course;
     }
 }

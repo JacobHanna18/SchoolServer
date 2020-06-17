@@ -1,5 +1,7 @@
 package server;
 
+import com.google.gson.Gson;
+import server.clientClasses.clientGrade;
 import server.entities.*;
 
 import net.bytebuddy.agent.builder.AgentBuilder;
@@ -8,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.util.List;
 
 public class Commands {
     String currentUser;
@@ -46,6 +49,25 @@ public class Commands {
         }
         js.put(Global.success,false);
         return js.toString();
+    }
+
+    String getGrades (String StudentID){
+        Student s = App.session.get(Student.class,StudentID);
+        System.out.println(1);
+        List<Grade> grades = s.Grades;
+        System.out.println(100);
+        System.out.println(grades);
+        System.out.println(grades.size());
+        System.out.println("70");
+        clientGrade[] arr = new clientGrade[grades.size()];
+
+        for (int i=0;i<grades.size();i++){
+            System.out.println(3);
+            Grade g = grades.get(i);
+            arr[i] = new clientGrade(g.getGrade(),g.getStudent().getId(),g.getCourse().getId());
+        }
+
+        return (new Gson()).toJson(arr);
     }
 
 }

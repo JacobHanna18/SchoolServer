@@ -30,6 +30,9 @@ public class Subject {
                 exams = null;
         }
 
+        public Subject() {
+        }
+
         public String getName() {
                 return Name;
         }

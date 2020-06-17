@@ -52,11 +52,20 @@ public class App
 		session.save(t);
 
 		Subject s = new Subject("Computer Science");
-		System.out.println(s.getName());
 		session.save(s);
 
 		Course c = new Course(s,t);
 		session.save(c);
+
+		Student s_ = new Student("jacon","123585","147258369");
+
+		Grade g = new Grade(100,s_,c);
+		session.save(g);
+
+
+		session.save(s_);
+
+
 
 		session.flush();
 		session.getTransaction().commit();
@@ -90,9 +99,10 @@ public class App
 
 			initializeData();
 
-			Course s = App.session.get(Course.class,"1");
-			System.out.println(s.getSubject().getName());
+			Student s = App.session.get(Student.class,"123585");
+			System.out.println(s.getName());
 
+			System.out.println((new Commands()).getGrades(s.getId()));
 
 
 		} catch (Exception e) {

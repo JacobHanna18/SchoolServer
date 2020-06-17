@@ -17,6 +17,9 @@ public class User {
         Pass = pass;
     }
 
+    public User() {
+    }
+
     public String getName() {
         return Name;
     }
