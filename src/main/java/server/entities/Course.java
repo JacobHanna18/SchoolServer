@@ -30,21 +30,19 @@ public class Course {
             joinColumns = @JoinColumn(name = "Course_id"),
             inverseJoinColumns = @JoinColumn(name = "Student_id")
     )
-    List<Student> students;
+    List<Student> students= new ArrayList<Student>();;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "course")
-    List<Grade> grades;
+    List<Grade> grades= new ArrayList<Grade>();;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "course")
-    List<Request> requests;
+    List<Request> requests= new ArrayList<Request>();;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "course")
-    List<Answer> answers;
+    List<Answer> answers= new ArrayList<Answer>();;
 
     public Course(Subject subject, Teacher teacher) {
-        this.subject = subject;
-        this.teacher = teacher;
-        this.students = null;
-        this.grades = null;
+        setSubject(subject);
+        setTeacher(teacher);
     }
 
     public Course() {
@@ -58,47 +56,67 @@ public class Course {
         return subject;
     }
 
-    public void setSubject(Subject subject) {
-        this.subject = subject;
-    }
-
     public Teacher getTeacher() {
         return teacher;
-    }
-
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
     }
 
     public Exam getExam() {
         return exam;
     }
 
-    public void setExam(Exam exam) {
-        this.exam = exam;
-    }
-
     public int getAccessCode() {
         return AccessCode;
-    }
-
-    public void setAccessCode(int accessCode) {
-        AccessCode = accessCode;
     }
 
     public List<Student> getStudents() {
         return students;
     }
 
-    public void AddStudent(Student student) {
-        students.add(student);
-    }
-
     public List<Grade> getGrades() {
         return grades;
     }
 
-    public void AddGrade(Grade grade) {
-        grades.add(grade);
+    public List<Request> getRequests() {
+        return requests;
+    }
+
+    public List<Answer> getAnswers() {
+        return answers;
+    }
+
+    public void addRequest (Request r){
+        r.setCourse(this);
+    }
+
+    public void addAnswer(Answer s){
+        s.setCourse(this);
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+        subject.getCourses().add(this);
+    }
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+        teacher.getCourses().add(this);
+    }
+
+    public void setExam(Exam exam) {
+        this.exam = exam;
+        exam.getCourses().add(this);
+    }
+
+    public void setAccessCode(int accessCode) {
+        AccessCode = accessCode;
+    }
+
+    public void addGrade (Grade g){
+        g.setCourse(this);
+    }
+
+    public void addStudent (Student s){
+        students.add(s);
+        s.getCourses().add(this);
     }
 }

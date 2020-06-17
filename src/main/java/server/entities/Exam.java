@@ -13,34 +13,47 @@ public class Exam {
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
             targetEntity = Question.class
     )
-    List<Question> Questions;
+    List<Question> Questions = new ArrayList<Question>();;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Subject_id")
     Subject subject;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "exam")
-    List<Course> courses;
+    List<Course> courses = new ArrayList<Course>();;
 
     public Exam(Subject subject) {
-        this.Questions = null;
-        this.subject = subject;
+        setSubject(subject);
     }
 
     public Exam() {
+    }
+
+    public int getId() {
+        return id;
     }
 
     public List<Question> getQuestions() {
         return Questions;
     }
 
-    public void AddQuestions(Question question) {
-        Questions.add(question);
-    }
-
     public Subject getSubject() {
         return subject;
     }
 
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void addCourse (Course c){
+        c.setExam(this);
+    }
+
     public void setSubject(Subject subject) {
         this.subject = subject;
+        subject.getExams().add(this);
+    }
+
+    public void addQuestion (Question q){
+        Questions.add(q);
+        q.getExams().add(this);
     }
 }

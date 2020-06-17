@@ -97,7 +97,7 @@ public class App
 			session = sessionFactory.openSession();
 			session.beginTransaction();
 
-			initializeData();
+			//initializeData();
 
 			Student s = App.session.get(Student.class,"123585");
 			System.out.println(s.getName());

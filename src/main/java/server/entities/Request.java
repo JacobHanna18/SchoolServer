@@ -19,4 +19,33 @@ public class Request {
 
     public Request() {
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getTimeAdded() {
+        return timeAdded;
+    }
+
+    public String getExplaination() {
+        return explaination;
+    }
+
+    public Course getCourse() {
+        return course;
+    }
+
+    public void setTimeAdded(int timeAdded) {
+        this.timeAdded = timeAdded;
+    }
+
+    public void setExplaination(String explaination) {
+        this.explaination = explaination;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+        course.getRequests().add(this);
+    }
 }

@@ -9,12 +9,20 @@ import java.util.*;
 @Table(name = "teachers")
 public class Teacher extends  User{
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "teacher")
-    List<Course> Courses ;
+    List<Course> Courses = new ArrayList<Course>();;
     public Teacher(String name, String id, String pass){
         super(name, id, pass);
-        this.Courses = null;
+
     }
 
     public Teacher() {
+    }
+
+    public List<Course> getCourses() {
+        return Courses;
+    }
+
+    public void addCourse (Course c){
+        c.setTeacher(this);
     }
 }

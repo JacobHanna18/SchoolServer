@@ -23,35 +23,47 @@ public class Grade {
     public Grade() {
     }
 
+    public Grade(int grade, Student student, Course course) {
+        setGrade(grade);
+        setStudent(student);
+        setCourse(course);
+    }
+
+    public int getId() {
+        return id;
+    }
 
     public int getGrade() {
         return grade;
     }
 
-    public void setGrade(int grade) {
-        this.grade = grade;
+    public String getChangeReason() {
+        return changeReason;
     }
 
     public Student getStudent() {
         return student;
     }
 
-    public void setStudent(Student student) {
-        this.student = student;
-        student.Grades.add(this);
-    }
-
     public Course getCourse() {
         return course;
     }
 
-    public void setCourse(Course course) {
-        this.course = course;
+    public void setGrade(int grade) {
+        this.grade = grade;
     }
 
-    public Grade(int grade, Student student, Course course) {
-        this.grade = grade;
-        setStudent(student);
+    public void setChangeReason(String changeReason) {
+        this.changeReason = changeReason;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+        student.getGrades().add(this);
+    }
+
+    public void setCourse(Course course) {
         this.course = course;
+        course.getGrades().add(this);
     }
 }

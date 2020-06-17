@@ -16,52 +16,55 @@ public class Subject {
         String Name;
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "subject")
-        List<Question> questions;
+        List<Question> questions = new ArrayList<Question>();
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "subject")
-        List<Exam> exams;
+        List<Exam> exams = new ArrayList<Exam>();
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "subject")
-        List<Course> courses;
+        List<Course> courses = new ArrayList<Course>();
 
         public Subject(String name) {
                 Name = name;
-                courses = null;
-                exams = null;
         }
 
         public Subject() {
+        }
+
+
+        public int getId() {
+                return id;
         }
 
         public String getName() {
                 return Name;
         }
 
-        public void setName(String name) {
-                Name = name;
-        }
-
         public List<Question> getQuestions() {
                 return questions;
-        }
-
-        public void AddQuestions(Question question) {
-                questions.add(question);
         }
 
         public List<Exam> getExams() {
                 return exams;
         }
 
-        public void AddExam(Exam exam) {
-                exams.add(exam);
-        }
-
         public List<Course> getCourses() {
                 return courses;
         }
 
-        public void AddCourse(Course course) {
-                courses.add(course);
+        public void setName(String name) {
+                Name = name;
+        }
+
+        public void addQuestion (Question q){
+                q.setSubject(this);
+        }
+
+        public void addCourse (Course c){
+                c.setSubject(this);
+        }
+
+        public void addExam(Exam e){
+                e.setSubject(this);
         }
 }
