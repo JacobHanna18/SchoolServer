@@ -20,7 +20,7 @@ public class Commands {
         JSONObject js = new JSONObject();
         Student s = App.session.get(Student.class,user);
         if(s != null){
-            if(s.getPass() == password){
+            if(s.getPass().equals(password)){
                 currentUser = user;
                 userType = Global.student;
                 js.put(Global.success,true);
@@ -30,7 +30,7 @@ public class Commands {
         }
         Teacher t = App.session.get(Teacher.class,user);
         if(t != null){
-            if(t.getPass() == password){
+            if(t.getPass().equals(password)){
                 currentUser = user;
                 userType = Global.teacher;
                 js.put(Global.success,true);
@@ -40,7 +40,7 @@ public class Commands {
         }
         Principle p = App.session.get(Principle.class,user);
         if(p != null){
-            if(p.getPass() == password){
+            if(p.getPass().equals(password)){
                 currentUser = user;
                 userType = Global.principle;
                 js.put(Global.success,true);
