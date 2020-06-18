@@ -20,7 +20,18 @@ public class Course {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Exam_id")
     Exam exam;
+
     int AccessCode;
+
+    public String getName() {
+        return Name;
+    }
+
+    public void setName(String name) {
+        this.Name = name;
+    }
+
+    String Name;
     @ManyToMany(
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
             targetEntity = Student.class
@@ -40,15 +51,34 @@ public class Course {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "course")
     List<Answer> answers= new ArrayList<Answer>();
 
-    public boolean isOnline() {
+    public int getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(int startTime) {
+        this.startTime = startTime;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    int startTime;
+    int duration;
+
+    public int getOnline() {
         return online;
     }
 
-    public void setOnline(boolean online) {
+    public void setOnline(int online) {
         this.online = online;
     }
 
-    boolean online;
+    int online;
 
     public Course(Subject subject, Teacher teacher) {
         setSubject(subject);

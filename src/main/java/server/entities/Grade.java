@@ -13,6 +13,16 @@ public class Grade {
 
     String changeReason;
 
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
+    }
+
+    boolean confirmed;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Student_id")
     Student student;

@@ -18,7 +18,7 @@ public class Exam {
     @JoinColumn(name = "Subject_id")
     Subject subject;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "exam")
-    List<Course> courses = new ArrayList<Course>();;
+    List<Course> courses = new ArrayList<Course>();
 
     public Exam(Subject subject) {
         setSubject(subject);

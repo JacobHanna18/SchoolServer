@@ -9,6 +9,7 @@ import javax.persistence.criteria.Root;
 
 
 import com.google.gson.Gson;
+import server.clientClasses.*;
 import server.entities.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -44,13 +45,7 @@ public class App
 
 	private static void initializeData() throws Exception {
 
-		Exam e = App.session.get(Exam.class,1);
-		Question q = App.session.get(Question.class,3);
-
-		e.addQuestion(q);
-
-		session.flush();
-		session.getTransaction().commit();
+		(new Commands()).newRequest(1,100,"loooooollllll");
 	}
 
 	public static <T> List<T> getAll(Class<T> object) {
@@ -73,9 +68,9 @@ public class App
 			session = sessionFactory.openSession();
 			session.beginTransaction();
 
-			//initializeData();
+			initializeData();
 
-			System.out.println((new Commands()).getExam(1));
+			//System.out.println((new Commands()).subjectExamList(1));
 
 
 		} catch (Exception e) {
