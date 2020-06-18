@@ -9,8 +9,7 @@
 	<artifactId>ServerSide</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<name>HelloHibernate</name>
-	<!-- FIXME change it to the project's website -->
+	<name>School Server</name>
 	<url>http://www.example.com</url>
 
 	<properties>
