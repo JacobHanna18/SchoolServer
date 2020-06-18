@@ -2,12 +2,12 @@ package server.clientClasses;
 
 public class clientGrade {
     int grade;
-    String StudentID;
-    int courseID;
+    int courseId;
+    String courseName;
 
-    public clientGrade(int grade, String studentID, int  courseID) {
+    public clientGrade(int grade, int courseId, String courseName) {
         this.grade = grade;
-        StudentID = studentID;
-        this.courseID = courseID;
+        this.courseId = courseId;
+        this.courseName = courseName;
     }
 }

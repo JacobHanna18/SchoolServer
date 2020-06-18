@@ -4,12 +4,13 @@ import com.google.gson.Gson;
 import server.clientClasses.clientGrade;
 import server.entities.*;
 
-import net.bytebuddy.agent.builder.AgentBuilder;
-import org.hibernate.Criteria;
+import javax.persistence.criteria.*;
+import org.hibernate.*;
+import org.hibernate.query.Query;
+
 import org.json.simple.JSONObject;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Commands {
@@ -51,22 +52,24 @@ public class Commands {
         return js.toString();
     }
 
-    String getGrades (String StudentID){
-        Student s = App.session.get(Student.class,StudentID);
-        System.out.println(1);
-        List<Grade> grades = s.getGrades();
-        System.out.println(100);
-        System.out.println(grades);
-        System.out.println(grades.size());
-        System.out.println("70");
-        clientGrade[] arr = new clientGrade[grades.size()];
+    String getGrades (String id){
 
-        for (int i=0;i<grades.size();i++){
-            System.out.println(3);
-            Grade g = grades.get(i);
-            arr[i] = new clientGrade(g.getGrade(),g.getStudent().getId(),g.getCourse().getId());
+        String hql = "FROM Grade g WHERE g.student = " + id;
+        Query<Grade> query = App.session.createQuery(hql, Grade.class);
+        List<Grade> l = query.list();
+        clientGrade[] gs = new clientGrade[l.size()];
+        for (int i = 0 ; i < l.size() ; i++){
+            Grade g = l.get(i);
+            gs[i] = new clientGrade(g.getGrade(),g.getId(),g.getCourse().getSubject().getName());
         }
+        return (new Gson()).toJson(gs);
 
+    }
+
+    <T> String  toJson (List <T> l, T[] arr){
+        for (int i = 0 ; i < l.size() ; i++){
+            arr[i] = l.get(i);
+        }
         return (new Gson()).toJson(arr);
     }
 

@@ -20,6 +20,8 @@ public class Exam {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "exam")
     List<Course> courses = new ArrayList<Course>();;
 
+    boolean online;
+
     public Exam(Subject subject) {
         setSubject(subject);
     }
@@ -43,6 +45,19 @@ public class Exam {
         return courses;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "teacher_id")
+    Teacher teacher;
+
+    public Teacher getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+        teacher.getExams().add(this);
+    }
+
     public void addCourse (Course c){
         c.setExam(this);
     }
@@ -55,5 +70,13 @@ public class Exam {
     public void addQuestion (Question q){
         Questions.add(q);
         q.getExams().add(this);
+    }
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
     }
 }

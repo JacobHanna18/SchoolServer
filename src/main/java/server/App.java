@@ -1,19 +1,14 @@
 package server;
 
-import java.lang.reflect.Array;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import com.google.gson.Gson;
 
 import server.entities.*;
-import jdk.dynalink.Operation;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -49,21 +44,21 @@ public class App
 	private static void initializeData() throws Exception {
 
 		Teacher t = new Teacher("zonaaa2","7894561235","123");
-		session.save(t);
+		session.persist(t);
 
 		Subject s = new Subject("Computer Science");
-		session.save(s);
+		session.persist(s);
 
 		Course c = new Course(s,t);
-		session.save(c);
+		session.persist(c);
 
-		Student s_ = new Student("jacon","123585","147258369");
+		Student s_ = new Student("jacob","123587","147258369");
+		session.persist(s_);
 
 		Grade g = new Grade(100,s_,c);
-		session.save(g);
+		session.persist(g);
 
 
-		session.save(s_);
 
 
 
@@ -80,13 +75,6 @@ public class App
 		return allQuery.getResultList();
 	}
 
-	public static void main2 (String[] args){
-		Course s = App.session.get(Course.class,"1");
-		System.out.println(s.getTeacher().getName());
-//		Gson g = new Gson();
-//		System.out.println(g.toJson(arr));
-//		System.out.println(g.fromJson(g.toJson(arr), jsonobject[].class)[2].i);
-	}
 	public static void main( String[] args )
 	{
 		try {
@@ -99,10 +87,7 @@ public class App
 
 			//initializeData();
 
-			Student s = App.session.get(Student.class,"123585");
-			System.out.println(s.getName());
-
-			System.out.println((new Commands()).getGrades(s.getId()));
+			System.out.println((new Commands()).getGrades("123587"));
 
 
 		} catch (Exception e) {

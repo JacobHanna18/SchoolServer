@@ -20,6 +20,19 @@ public class Question {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Subject_id")
     Subject subject;
+
+    public Teacher getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+        teacher.getQuestions().add(this);
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Teacher_id")
+    Teacher teacher;
     @ManyToMany(
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
             targetEntity = Exam.class
