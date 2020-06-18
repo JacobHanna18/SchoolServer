@@ -8,6 +8,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 
+import com.google.gson.Gson;
 import server.entities.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -43,24 +44,10 @@ public class App
 
 	private static void initializeData() throws Exception {
 
-		Teacher t = new Teacher("zonaaa2","7894561235","123");
-		session.persist(t);
+		Exam e = App.session.get(Exam.class,1);
+		Question q = App.session.get(Question.class,3);
 
-		Subject s = new Subject("Computer Science");
-		session.persist(s);
-
-		Course c = new Course(s,t);
-		session.persist(c);
-
-		Student s_ = new Student("jacob","123587","147258369");
-		session.persist(s_);
-
-		Grade g = new Grade(100,s_,c);
-		session.persist(g);
-
-
-
-
+		e.addQuestion(q);
 
 		session.flush();
 		session.getTransaction().commit();
@@ -77,6 +64,7 @@ public class App
 
 	public static void main( String[] args )
 	{
+
 		try {
 
 			//Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
@@ -87,7 +75,7 @@ public class App
 
 			//initializeData();
 
-			System.out.println((new Commands()).getGrades("123587"));
+			System.out.println((new Commands()).getExam(1));
 
 
 		} catch (Exception e) {

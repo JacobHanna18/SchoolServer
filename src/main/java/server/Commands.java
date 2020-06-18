@@ -1,12 +1,11 @@
 package server;
 
 import com.google.gson.Gson;
-import server.clientClasses.clientGrade;
-import server.entities.*;
-
-import javax.persistence.criteria.*;
-import org.hibernate.*;
 import org.hibernate.query.Query;
+import server.clientClasses.clientExam;
+import server.clientClasses.clientQuestion;
+import server.clientClasses.clientSubject;
+import server.entities.*;
 
 import org.json.simple.JSONObject;
 
@@ -52,26 +51,44 @@ public class Commands {
         return js.toString();
     }
 
-    String getGrades (String id){
-
-        String hql = "FROM Grade g WHERE g.student = " + id;
-        Query<Grade> query = App.session.createQuery(hql, Grade.class);
-        List<Grade> l = query.list();
-        clientGrade[] gs = new clientGrade[l.size()];
-        for (int i = 0 ; i < l.size() ; i++){
-            Grade g = l.get(i);
-            gs[i] = new clientGrade(g.getGrade(),g.getId(),g.getCourse().getSubject().getName());
-        }
-        return (new Gson()).toJson(gs);
-
-    }
-
-    <T> String  toJson (List <T> l, T[] arr){
-        for (int i = 0 ; i < l.size() ; i++){
-            arr[i] = l.get(i);
+    String teacherSubjectList (String teacherId){
+        String hql = "SELECT c.subject FROM Course c WHERE c.teacher = " + teacherId;
+        List<Subject> l = listFrom(hql,Subject.class);
+        ArrayList<clientSubject> arr = new ArrayList<>();
+        for (Subject s : l){
+            arr.add(new clientSubject(s.getName(),s.getId()));
         }
         return (new Gson()).toJson(arr);
     }
+
+    String getExam (int examID){
+        Exam e = App.session.get(Exam.class, examID);
+
+        clientExam exam = new clientExam(e.getTeacher().getName());
+        for (Question q : e.getQuestions()){
+            exam.questions.add(new clientQuestion(q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3(),q.getTeacher().getName()));
+        }
+        return (new Gson()).toJson(exam);
+    }
+
+    <T> List<T> listFrom (String hql, Class<T> obj ){
+        Query<T> query = App.session.createQuery(hql, obj);
+        return query.list();
+    }
+
+//    String getGrades (String id){
+//
+//        String hql = "FROM Grade g WHERE g.student = " + id;
+//        Query<Grade> query = App.session.createQuery(hql, Grade.class);
+//        List<Grade> l = query.list();
+//        ArrayList<clientGrade> gs = new ArrayList<>();
+//        for (Grade g : l){
+//            gs.add(new clientGrade(g.getGrade(),g.getId(),g.getCourse().getSubject().getName()));
+//        }
+//        return (new Gson()).toJson(gs);
+//
+//    }
+
 
 }
 

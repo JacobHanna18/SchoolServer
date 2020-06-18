@@ -20,8 +20,6 @@ public class Exam {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "exam")
     List<Course> courses = new ArrayList<Course>();;
 
-    boolean online;
-
     public Exam(Subject subject) {
         setSubject(subject);
     }
@@ -72,11 +70,4 @@ public class Exam {
         q.getExams().add(this);
     }
 
-    public boolean isOnline() {
-        return online;
-    }
-
-    public void setOnline(boolean online) {
-        this.online = online;
-    }
 }

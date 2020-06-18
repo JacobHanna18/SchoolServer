@@ -30,15 +30,25 @@ public class Course {
             joinColumns = @JoinColumn(name = "Course_id"),
             inverseJoinColumns = @JoinColumn(name = "Student_id")
     )
-    List<Student> students= new ArrayList<Student>();;
+    List<Student> students= new ArrayList<Student>();
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "course")
-    List<Grade> grades= new ArrayList<Grade>();;
+    List<Grade> grades= new ArrayList<Grade>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "course")
-    List<Request> requests= new ArrayList<Request>();;
+    List<Request> requests= new ArrayList<Request>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "course")
-    List<Answer> answers= new ArrayList<Answer>();;
+    List<Answer> answers= new ArrayList<Answer>();
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+
+    boolean online;
 
     public Course(Subject subject, Teacher teacher) {
         setSubject(subject);
