@@ -9,19 +9,20 @@ public class Grade {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    int grade;
+    double grade;
+
 
     String changeReason;
 
-    public boolean isConfirmed() {
+    public int isConfirmed() {
         return confirmed;
     }
 
-    public void setConfirmed(boolean confirmed) {
+    public void setConfirmed(int confirmed) {
         this.confirmed = confirmed;
     }
 
-    boolean confirmed;
+    int confirmed;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Student_id")
@@ -43,7 +44,7 @@ public class Grade {
         return id;
     }
 
-    public int getGrade() {
+    public double getGrade() {
         return grade;
     }
 
@@ -59,7 +60,7 @@ public class Grade {
         return course;
     }
 
-    public void setGrade(int grade) {
+    public void setGrade(double grade) {
         this.grade = grade;
     }
 

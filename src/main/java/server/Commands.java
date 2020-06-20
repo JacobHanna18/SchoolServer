@@ -10,12 +10,14 @@ import org.json.simple.JSONObject;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Commands {
     String currentUser;
     int userType;
+    static Gson gson = new Gson();
     String LogIn (String user, String password){
         JSONObject js = new JSONObject();
         clientUser cu = new clientUser();
@@ -46,7 +48,7 @@ public class Commands {
             }
         }
 
-        return (new Gson()).toJson(cu);
+        return gson.toJson(cu);
     }
 
     String teacherSubjectList (String teacherId){
@@ -56,7 +58,7 @@ public class Commands {
         for (Subject s : l){
             arr.add(new clientSubject(s.getName(),s.getId()));
         }
-        return (new Gson()).toJson(arr);
+        return gson.toJson(arr);
     }
 
     String getExam (int examID){
@@ -66,7 +68,7 @@ public class Commands {
         for (Question q : e.getQuestions()){
             exam.questions.add(new clientQuestion(q.getId(), q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3(),q.getTeacher().getName()));
         }
-        return (new Gson()).toJson(exam);
+        return gson.toJson(exam);
     }
 
     String examFromCourse (int courseId){
@@ -96,6 +98,7 @@ public class Commands {
         Course c = em.getReference(Course.class,courseId);
 
         c.setStartTime((int) (System.currentTimeMillis() / 1000));
+        c.setAccessCode(accessID);
         c.setDuration(duration);
 
         em.persist(c);
@@ -110,7 +113,7 @@ public class Commands {
         for (Question q : l){
             arr.add(new clientQuestion(q.getId(), q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3(),q.getTeacher().getName()));
         }
-        return (new Gson()).toJson(arr);
+        return gson.toJson(arr);
     }
 
     String subjectExamList (int subjectId){
@@ -120,7 +123,7 @@ public class Commands {
         for (Exam e : l){
             arr.add(new clientExam(e.getId(),e.getTeacher().getName()));
         }
-        return (new Gson()).toJson(arr);
+        return gson.toJson(arr);
     }
 
     void createExam (clientExam e, int subjectID, String teacherID){
@@ -161,7 +164,7 @@ public class Commands {
         for (Course c : l){
             arr.add(new clientCourse(c.getName(),c.getId()));
         }
-        return (new Gson()).toJson(arr);
+        return gson.toJson(arr);
     }
 
     void newRequest (int courseId, int addedTime, String exp){
@@ -180,6 +183,90 @@ public class Commands {
         em.close();
     }
 
+    void confirmGrade (String studentID, int courseID){
+        EntityManager em = App.session.getEntityManagerFactory().createEntityManager();
+        em.getTransaction().begin();
+
+        String hql = "FROM Grade g WHERE g.course = " + courseID + " AND g.student = " + studentID;
+
+        Grade g = em.createQuery(hql,Grade.class).getSingleResult();
+
+        g.setConfirmed(1);
+
+        em.persist(g);
+        em.getTransaction().commit();
+        em.close();
+    }
+
+    void changeAndConfirmGrade (String studentID, int courseID, int newGrade, String reason){
+
+        EntityManager em = App.session.getEntityManagerFactory().createEntityManager();
+        em.getTransaction().begin();
+
+        String hql = "FROM Grade g WHERE g.course = " + courseID + " AND g.student = " + studentID;
+
+        Grade g = em.createQuery(hql,Grade.class).getSingleResult();
+
+        g.setChangeReason(reason);
+        g.setGrade(newGrade);
+        g.setConfirmed(1);
+
+        em.persist(g);
+        em.getTransaction().commit();
+        em.close();
+    }
+
+    String getGrade (String studentID, int courseID){
+        String hql = "FROM Grade g WHERE g.course = " + courseID + " AND g.student = " + studentID;
+
+        Grade g = getFirst(hql,Grade.class);
+        clientGrade cg = new clientGrade();
+        cg.grade = g.getGrade();
+        cg.course = new clientCourse(g.getCourse().getName(), g.getCourse().getId());
+        cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
+        return gson.toJson(cg);
+    }
+
+    String getGradesOfCourse (int courseID){
+        String hql = "FROM Grade g WHERE g.course = " + courseID;
+        List<Grade> gs = listFrom(hql,Grade.class);
+
+        ArrayList <clientGrade> cgs = new ArrayList<>();
+
+        for(Grade g : gs){
+            clientGrade cg = new clientGrade();
+            cg.grade = g.getGrade();
+            cg.course = new clientCourse(g.getCourse().getName(), g.getCourse().getId());
+            cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
+            cgs.add(cg);
+        }
+
+        return gson.toJson(cgs);
+    }
+
+    String getGradesOfStudent (String studentID, int confirmed){
+        String hql = "FROM Grade g WHERE g.student = " + studentID + (confirmed==1 ? " AND g.confirmed = 1" : "");
+        List<Grade> gs = listFrom(hql,Grade.class);
+
+        ArrayList <clientGrade> cgs = new ArrayList<>();
+
+        for(Grade g : gs){
+            clientGrade cg = new clientGrade();
+            cg.grade = g.getGrade();
+            cg.course = new clientCourse(g.getCourse().getName(), g.getCourse().getId());
+            cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
+            cgs.add(cg);
+        }
+
+        return gson.toJson(cgs);
+    }
+
+
+    <T> T getFirst (String hql, Class<T> obj){
+        Query<T> query = App.session.createQuery(hql, obj);
+        return query.getSingleResult();
+    }
+
     <T> List<T> listFrom (String hql, Class<T> obj ){
         Query<T> query = App.session.createQuery(hql, obj);
         return query.list();
@@ -194,7 +281,7 @@ public class Commands {
 //        for (Grade g : l){
 //            gs.add(new clientGrade(g.getGrade(),g.getId(),g.getCourse().getSubject().getName()));
 //        }
-//        return (new Gson()).toJson(gs);
+//        return gson.toJson(gs);
 //
 //    }
 
