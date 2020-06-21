@@ -156,6 +156,39 @@ public class Commands {
         em.getTransaction().commit();
         em.close();
     }
+    /* MAKE TEST FOR THIS */
+   // get the asnwers of student in course
+    String studnetAnswersOfCourse (int courseId, String studentId){
+        String hql = "FROM Answer a WHERE a.course = " + courseId + " AND a.student = " + studentId;
+        List<Answer> l = listFrom(hql,Answer.class);
+        ArrayList<clientAnswer> arr = new ArrayList<>();
+        for (Answer a : l){
+            arr.add(new clientAnswer(a.getId()));
+        }
+        return gson.toJson(arr);
+    }
+    /* MAKE TEST FOR THIS */
+    // get the questions that the teacher wrote
+    String questionsOfTeacher (String teacherId){
+        String hql = "FROM Question q WHERE q.teacher = " + teacherId ;
+        List<Question> l = listFrom(hql,Question.class);
+        ArrayList<clientQuestion> arr = new ArrayList<>();
+        for (Question q : l){
+            arr.add(new clientQuestion(q.getId(), q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3(),q.getTeacher().getName()));
+        }
+        return gson.toJson(arr);
+    }
+    /* MAKE TEST FOR THIS */
+    // get the exams that the teacher created
+    String examsFromTeacher (String teacherId){
+        String hql = "FROM Exam e WHERE e.teacher = " + teacherId ;
+        List<Exam> l = listFrom(hql,Exam.class);
+        ArrayList<clientExam> arr = new ArrayList<>();
+        for (Exam e : l){
+            arr.add(new clientExam(e.getId(),(e.getTeacher().getName())));
+        }
+        return gson.toJson(arr);
+        }
 
     String coursesOfSubjectTeacher (int subjectId, String teacherId){
         String hql = "FROM Course c WHERE c.subject = " + subjectId + " AND c.teacher = " + teacherId;
