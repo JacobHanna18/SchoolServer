@@ -163,7 +163,7 @@ public class Commands {
         List<Answer> l = listFrom(hql,Answer.class);
         ArrayList<clientAnswer> arr = new ArrayList<>();
         for (Answer a : l){
-            arr.add(new clientAnswer(a.getId()));
+            arr.add(new clientAnswer(a.getId(), a.getAnswer(), a.getQuestion().getId(), a.getCourse().getId()));
         }
         return gson.toJson(arr);
     }
