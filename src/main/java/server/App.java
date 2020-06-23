@@ -45,7 +45,7 @@ public class App
 
 	private static void initializeData() throws Exception {
 
-		System.out.println((new Commands()).studentGrade(1,"1",0));
+		System.out.println((new Commands()).studentAverage("1",0));
 
 	}
 

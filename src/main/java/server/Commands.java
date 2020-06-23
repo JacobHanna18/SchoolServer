@@ -158,6 +158,18 @@ public class Commands {
         em.close();
     }
 
+    String courseAverage (int courseId, int onlyConfirmed){
+        String hql = "SELECT avg(grade) FROM Grade g where g.course = " + courseId + (onlyConfirmed==1 ? " AND g.confirmed = 1" : "");
+        Double avg = getFirst(hql, Double.class);
+        return gson.toJson(avg);
+    }
+
+    String studentAverage (String studentID, int onlyConfirmed){
+        String hql = "SELECT avg(grade) FROM Grade g where g.student = " + studentID + (onlyConfirmed==1 ? " AND g.confirmed = 1" : "");
+        Double avg = getFirst(hql, Double.class);
+        return gson.toJson(avg);
+    }
+
     String studentGrade (int courseId, String studentId, int onlyConfirmed){
         String hql = "FROM Answer a WHERE a.course = " + courseId + " AND a.student = " + studentId;
         List<Answer> l = listFrom(hql,Answer.class);
