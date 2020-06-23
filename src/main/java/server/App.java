@@ -45,8 +45,8 @@ public class App
 
 	private static void initializeData() throws Exception {
 
-		System.out.println((new Commands()).getGradesOfStudent("1",1));
-		System.out.println((new Commands()).getGradesOfStudent("1",0));
+		System.out.println((new Commands()).studentGrade(1,"1",0));
+
 	}
 
 	public static <T> List<T> getAll(Class<T> object) {

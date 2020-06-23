@@ -1,10 +1,16 @@
 package server.clientClasses;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 public class clientCourse {
     public String name;
     public int id;
+    public int online;
 
-    public clientCourse(String name, int id) {
+    public ArrayList<clientUser> students = new ArrayList<>();
+
+    public clientCourse(String name, int id, int online) {
         this.name = name;
         this.id = id;
     }
