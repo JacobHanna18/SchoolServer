@@ -456,6 +456,32 @@ public class Commands {
         App.session.getTransaction().commit();
     }
 
+    String coursesBySubject (int subjectID, int onlyConfirmed){
+        String hql = "SELECT g.course , AVG(g.grade) FROM Grade g WHERE g.course.subject = " + subjectID + (onlyConfirmed == 0 ? "" : " AND g.confirmed = 1") + " GROUP BY g.course";
+        List<Object[]> arr = listFrom(hql,Object[].class);
+
+        ArrayList<clientCourse> cs = new ArrayList<>();
+        for(Object[] o : arr){
+            Course s = (Course)o[0];
+            Double avg = (Double) o[1];
+            cs.add(new clientCourse(s.getName(),s.getId(),s.getOnline(),avg));
+        }
+        return gson.toJson(cs);
+    }
+
+    String coursesByTeacher (String teacherID, int onlyConfirmed){
+        String hql = "SELECT g.course , AVG(g.grade) FROM Grade g WHERE g.course.teacher = " + teacherID + (onlyConfirmed == 0 ? "" : " AND g.confirmed = 1") + " GROUP BY g.course";
+        List<Object[]> arr = listFrom(hql,Object[].class);
+
+        ArrayList<clientCourse> cs = new ArrayList<>();
+        for(Object[] o : arr){
+            Course s = (Course)o[0];
+            Double avg = (Double) o[1];
+            cs.add(new clientCourse(s.getName(),s.getId(),s.getOnline(),avg));
+        }
+        return gson.toJson(cs);
+    }
+
     <T> T getFirst (String hql, Class<T> obj){
         Query<T> query = App.session.createQuery(hql, obj);
         return query.getSingleResult();

@@ -48,8 +48,8 @@ public class App
 
 		Commands com = new Commands();
 
-		com.decideRequest(1,false);
-		//System.out.println();
+
+		System.out.println(com.coursesByTeacher("7",1));
 
 	}
 
