@@ -51,8 +51,8 @@ public class Commands {
         return gson.toJson(cu);
     }
 
-    String teacherSubjectList (String teacherId){
-        String hql = "SELECT c.subject FROM Course c WHERE c.teacher = " + teacherId;
+    String teacherSubjectList (String teacherID){
+        String hql = "SELECT c.subject FROM Course c WHERE c.teacher = " + teacherID;
         List<Subject> l = listFrom(hql,Subject.class);
         ArrayList<clientSubject> arr = new ArrayList<>();
         for (Subject s : l){
@@ -71,18 +71,18 @@ public class Commands {
         return gson.toJson(exam);
     }
 
-    String examFromCourse (int courseId){
-        Course c = App.session.get(Course.class, courseId);
+    String examFromCourse (int courseID){
+        Course c = App.session.get(Course.class, courseID);
 
         return getExam(c.getExam().getId());
     }
 
-    void selectExam (int examId, int courseId){
+    void selectExam (int examID, int courseID){
         EntityManager em = App.session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
 
-        Course c = em.getReference(Course.class,courseId);
-        Exam e = em.getReference(Exam.class,examId);
+        Course c = em.getReference(Course.class,courseID);
+        Exam e = em.getReference(Exam.class,examID);
         c.setExam(e);
 
 
@@ -91,19 +91,26 @@ public class Commands {
         em.close();
     }
 
-    void startExam (int courseId, int accessID, int duration){
+    String startExam (int courseID, int accessID, int duration, int online){
+        String hql = "FROM Course c WHERE c.AccessCode = " + accessID;
+        List<Course> l = listFrom(hql,Course.class);
+        if(l.size() != 0){
+            return gson.toJson(new clientCompletion(false));
+        }
         EntityManager em = App.session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
 
-        Course c = em.getReference(Course.class,courseId);
+        Course c = em.getReference(Course.class,courseID);
 
         c.setStartTime((int) (System.currentTimeMillis() / 1000));
         c.setAccessCode(accessID);
         c.setDuration(duration);
+        c.setOnline(online);
 
         em.persist(c);
         em.getTransaction().commit();
         em.close();
+        return gson.toJson(new clientCompletion(true));
     }
 
     String subjectQuestionList (int subjectId){
@@ -158,8 +165,8 @@ public class Commands {
         em.close();
     }
 
-    String courseAverage (int courseId, int onlyConfirmed){
-        String hql = "SELECT avg(grade) FROM Grade g where g.course = " + courseId + (onlyConfirmed==1 ? " AND g.confirmed = 1" : "");
+    String courseAverage (int courseID, int onlyConfirmed){
+        String hql = "SELECT avg(grade) FROM Grade g where g.course = " + courseID + (onlyConfirmed==1 ? " AND g.confirmed = 1" : "");
         Double avg = getFirst(hql, Double.class);
         return gson.toJson(avg);
     }
@@ -170,11 +177,11 @@ public class Commands {
         return gson.toJson(avg);
     }
 
-    String studentGrade (int courseId, String studentId, int onlyConfirmed){
-        String hql = "FROM Answer a WHERE a.course = " + courseId + " AND a.student = " + studentId;
+    String studentGrade (int courseID, String studentID, int onlyConfirmed){
+        String hql = "FROM Answer a WHERE a.course = " + courseID + " AND a.student = " + studentID;
         List<Answer> l = listFrom(hql,Answer.class);
 
-        String hql2 = "FROM Grade g WHERE g.course = " + courseId + " AND g.student = " + studentId;
+        String hql2 = "FROM Grade g WHERE g.course = " + courseID + " AND g.student = " + studentID;
 
         Grade g = getFirst(hql2,Grade.class);
         clientGrade cg = new clientGrade();
@@ -187,13 +194,17 @@ public class Commands {
         cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
 
         for (Answer a : l){
-            cg.answers.add(new clientAnswer(a.getId(), a.getAnswer(), a.getQuestion().getId(), a.getCourse().getId()));
+            clientAnswer ca = new clientAnswer(a.getAnswer(),a.getQuestion().getId(), a.getCourse().getId());
+            Question q = a.getQuestion();
+            ca.question = new clientQuestion(q.getId(), q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3(),q.getTeacher().getName());
+            cg.answers.add(ca);
+
         }
         return gson.toJson(cg);
     }
 
-    String questionsOfTeacher (String teacherId){
-        String hql = "FROM Question q WHERE q.teacher = " + teacherId ;
+    String questionsOfTeacher (String teacherID){
+        String hql = "FROM Question q WHERE q.teacher = " + teacherID ;
         List<Question> l = listFrom(hql,Question.class);
         ArrayList<clientQuestion> arr = new ArrayList<>();
         for (Question q : l){
@@ -203,7 +214,7 @@ public class Commands {
     }
 
     String courseStudents (int courseID){
-        String hql = "SELECT s FROM Student s JOIN s.Courses c WHERE c = " + courseID;
+        String hql = "SELECT g.student FROM Grade g WHERE g.course = " + courseID;
         List<Student> l = listFrom(hql,Student.class);
         Course dbc = App.session.get(Course.class, courseID);
         clientCourse e = new clientCourse(dbc.getName(),dbc.getId(),dbc.getOnline());
@@ -212,8 +223,8 @@ public class Commands {
         }
         return gson.toJson(e);
     }
-    String examsFromTeacher (String teacherId){
-        String hql = "FROM Exam e WHERE e.teacher = " + teacherId ;
+    String examsFromTeacher (String teacherID){
+        String hql = "FROM Exam e WHERE e.teacher = " + teacherID ;
         List<Exam> l = listFrom(hql,Exam.class);
         ArrayList<clientExam> arr = new ArrayList<>();
         for (Exam e : l){
@@ -226,8 +237,8 @@ public class Commands {
         return gson.toJson(arr);
         }
 
-    String coursesOfSubjectTeacher (int subjectId, String teacherId){
-        String hql = "FROM Course c WHERE c.subject = " + subjectId + " AND c.teacher = " + teacherId;
+    String coursesOfSubjectTeacher (int subjectId, String teacherID){
+        String hql = "FROM Course c WHERE c.subject = " + subjectId + " AND c.teacher = " + teacherID;
         List<Course> l = listFrom(hql,Course.class);
         ArrayList<clientCourse> arr = new ArrayList<>();
         for (Course c : l){
@@ -236,7 +247,7 @@ public class Commands {
         return gson.toJson(arr);
     }
 
-    void newRequest (int courseId, int addedTime, String exp){
+    void newRequest (int courseID, int addedTime, String exp){
         EntityManager em = App.session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
 
@@ -244,7 +255,7 @@ public class Commands {
         r.setExplaination(exp);
         r.setTimeAdded(addedTime);
 
-        Course c = em.getReference(Course.class,courseId);
+        Course c = em.getReference(Course.class,courseID);
         r.setCourse(c);
 
         em.persist(r);
@@ -314,13 +325,19 @@ public class Commands {
     }
 
     String getGradesOfStudent (String studentID, int onlyConfirmed){
-        String hql = "FROM Grade g WHERE g.student = " + studentID + (onlyConfirmed==1 ? " AND g.confirmed = 1" : "");
+        String hql = "FROM Grade g WHERE g.student = " + studentID;
         List<Grade> gs = listFrom(hql,Grade.class);
 
         ArrayList <clientGrade> cgs = new ArrayList<>();
 
         for(Grade g : gs){
             clientGrade cg = new clientGrade();
+            cg.online = g.getCourse().getOnline();
+            if(!(onlyConfirmed == 1 && g.isConfirmed() == 0)){
+                cg.grade = g.getGrade();
+            }else{
+                cg.grade = -1;
+            }
             cg.grade = g.getGrade();
             cg.course = new clientCourse(g.getCourse().getName(), g.getCourse().getId(),g.getCourse().getOnline());
             cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
@@ -330,6 +347,57 @@ public class Commands {
         return gson.toJson(cgs);
     }
 
+    String takeExam (int AccessCode, String studentID){
+        String hql = "FROM Course c WHERE c.AccessCode = " + AccessCode;
+        Course c = getFirst(hql, Course.class);
+
+        String hql2 = "SELECT g.student FROM Grade g WHERE g.course = " + c.getId() + " AND g.student = " + studentID;
+        List<Student> l2 = listFrom(hql2,Student.class);
+        if(l2.size() == 0) {
+            Student s = App.session.get(Student.class, studentID);
+            Grade g = new Grade();
+            g.setStudent(s);
+            g.setCourse(c);
+            App.session.save(g);
+            App.session.getTransaction().commit();
+        }
+
+        clientExam ce = new clientExam();
+
+
+        int currentTime = ((int) (System.currentTimeMillis() / 1000));
+
+        if(currentTime - c.getStartTime() > c.getDuration()){
+            ce.online = -1;
+            return gson.toJson(ce);
+        }
+
+        ce.online = c.getOnline();
+        Exam e = c.getExam();
+        for (Question q : e.getQuestions()){
+            ce.questions.add(new clientQuestion(q.getId(), q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3(),q.getTeacher().getName()));
+        }
+        return gson.toJson(ce);
+    }
+    void submitOnlineExam (ArrayList<clientAnswer> arr, int courseID, String studentID){
+        EntityManager em = App.session.getEntityManagerFactory().createEntityManager();
+        em.getTransaction().begin();
+        Course c = em.getReference(Course.class, courseID);
+        Student s = em.getReference(Student.class, studentID);
+
+        for (clientAnswer ca : arr){
+            Answer newA = new Answer();
+            newA.setAnswer(ca.answer);
+            Question q = em.getReference(Question.class,ca.questionId);
+            newA.setStudent(s);
+            newA.setCourse(c);
+            newA.setQuestion(q);
+            em.persist(newA);
+        }
+
+        em.getTransaction().commit();
+        em.close();
+    }
 
     <T> T getFirst (String hql, Class<T> obj){
         Query<T> query = App.session.createQuery(hql, obj);
@@ -341,18 +409,6 @@ public class Commands {
         return query.list();
     }
 
-//    String getGrades (String id){
-//
-//        String hql = "FROM Grade g WHERE g.student = " + id;
-//        Query<Grade> query = App.session.createQuery(hql, Grade.class);
-//        List<Grade> l = query.list();
-//        ArrayList<clientGrade> gs = new ArrayList<>();
-//        for (Grade g : l){
-//            gs.add(new clientGrade(g.getGrade(),g.getId(),g.getCourse().getSubject().getName()));
-//        }
-//        return gson.toJson(gs);
-//
-//    }
 
 
 }

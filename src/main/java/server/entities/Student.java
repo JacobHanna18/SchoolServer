@@ -6,11 +6,11 @@ import java.util.*;
 @Table(name = "students")
 public class Student extends User {
 
-    @ManyToMany(mappedBy = "students",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-            targetEntity = Course.class
-    )
-    List<Course> Courses = new ArrayList<Course>();;
+//    @ManyToMany(mappedBy = "students",
+//            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+//            targetEntity = Course.class
+//    )
+//    List<Course> Courses = new ArrayList<Course>();
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "student")
     List<Grade> Grades = new ArrayList<Grade>();
 
@@ -25,9 +25,9 @@ public class Student extends User {
     public Student() {
     }
 
-    public List<Course> getCourses() {
-        return Courses;
-    }
+//    public List<Course> getCourses() {
+//        return Courses;
+//    }
 
     public List<Grade> getGrades() {
         return Grades;
@@ -45,7 +45,7 @@ public class Student extends User {
         g.setStudent(this);
     }
 
-    public void addCourse (Course c){
-        c.addStudent(this);
-    }
+//    public void addCourse (Course c){
+//        c.addStudent(this);
+//    }
 }

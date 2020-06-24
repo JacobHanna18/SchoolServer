@@ -1,5 +1,6 @@
 package server;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.TypedQuery;
@@ -45,7 +46,9 @@ public class App
 
 	private static void initializeData() throws Exception {
 
-		System.out.println((new Commands()).studentAverage("1",0));
+		Commands com = new Commands();
+
+		System.out.println(com.studentGrade(2,"1",0));
 
 	}
 
@@ -70,8 +73,6 @@ public class App
 			session.beginTransaction();
 
 			initializeData();
-
-			//System.out.println((new Commands()).subjectExamList(1));
 
 
 		} catch (Exception e) {

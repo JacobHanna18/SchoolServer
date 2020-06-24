@@ -32,16 +32,18 @@ public class Course {
     }
 
     String Name;
-    @ManyToMany(
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-            targetEntity = Student.class
-    )
-    @JoinTable(
-            name = "Students_Courses",
-            joinColumns = @JoinColumn(name = "Course_id"),
-            inverseJoinColumns = @JoinColumn(name = "Student_id")
-    )
-    List<Student> students= new ArrayList<Student>();
+//    @ManyToMany(
+//            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+//            targetEntity = Student.class
+//    )
+//    @JoinTable(
+//            name = "Students_Courses",
+//            joinColumns = @JoinColumn(name = "Course_id"),
+//            inverseJoinColumns = @JoinColumn(name = "Student_id")
+//    )
+//    List<Student> students= new ArrayList<Student>();
+
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "course")
     List<Grade> grades= new ArrayList<Grade>();
 
@@ -108,10 +110,10 @@ public class Course {
         return AccessCode;
     }
 
-    public List<Student> getStudents() {
-        return students;
-    }
-
+//    public List<Student> getStudents() {
+//        return students;
+//    }
+//
     public List<Grade> getGrades() {
         return grades;
     }
@@ -155,8 +157,8 @@ public class Course {
         g.setCourse(this);
     }
 
-    public void addStudent (Student s){
-        students.add(s);
-        s.getCourses().add(this);
-    }
+//    public void addStudent (Student s){
+//        students.add(s);
+//        s.getCourses().add(this);
+//    }
 }
