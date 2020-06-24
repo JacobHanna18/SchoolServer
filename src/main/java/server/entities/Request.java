@@ -12,6 +12,7 @@ public class Request {
 
     int timeAdded;
     String explaination;
+    int active;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Course_id")
@@ -47,5 +48,13 @@ public class Request {
     public void setCourse(Course course) {
         this.course = course;
         course.getRequests().add(this);
+    }
+
+    public int getActive() {
+        return active;
+    }
+
+    public void setActive(int active) {
+        this.active = active;
     }
 }

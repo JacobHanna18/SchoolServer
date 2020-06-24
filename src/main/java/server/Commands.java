@@ -399,6 +399,63 @@ public class Commands {
         em.close();
     }
 
+    String allTeachers (){
+        String hql = "SELECT t FROM Teacher t";
+        List<Teacher> arr = listFrom(hql,Teacher.class);
+
+        ArrayList<clientUser> ts = new ArrayList<>();
+
+        for( Teacher t : arr){
+            ts.add(new clientUser(t.getName(),t.getId(),2));
+        }
+
+        return gson.toJson(ts);
+    }
+
+    String allStudents (){
+        String hql = "SELECT s FROM Student s";
+        List<Student> arr = listFrom(hql,Student.class);
+
+        ArrayList<clientUser> ss = new ArrayList<>();
+
+        for( Student s: arr){
+            ss.add(new clientUser(s.getName(),s.getId(),1));
+        }
+
+        return gson.toJson(ss);
+    }
+
+    String allRequests(int onlyActive){
+        String hql = "SELECT r FROM Request r" + (onlyActive == 0 ? "" : " WHERE r.active = 1");
+        List<Request> arr = listFrom(hql,Request.class);
+
+        ArrayList<clientRequest> ss = new ArrayList<>();
+
+        for( Request r: arr){
+            clientRequest cr = new clientRequest(r.getTimeAdded(),r.getExplaination(),r.getId());
+            Course c = r.getCourse();
+            cr.course = new clientCourse(c.getName(),c.getId(),c.getOnline());
+            Teacher t = c.getTeacher();
+            cr.teacher = new clientUser(t.getName(),t.getId(),2);
+
+            ss.add(cr);
+        }
+
+        return gson.toJson(ss);
+    }
+
+    void decideRequest(int requestID, boolean accept){
+        Request r = App.session.get(Request.class,requestID);
+        r.setActive(0);
+        App.session.update(r);
+        if(accept){
+            Course c = r.getCourse();
+            c.setDuration(c.getDuration() + r.getTimeAdded());
+            App.session.update(c);
+        }
+        App.session.getTransaction().commit();
+    }
+
     <T> T getFirst (String hql, Class<T> obj){
         Query<T> query = App.session.createQuery(hql, obj);
         return query.getSingleResult();

@@ -16,4 +16,9 @@ public class clientUser {
         this.name = name;
         this.id = id;
     }
+    public clientUser(String name, String id, int role) {
+        this.name = name;
+        this.id = id;
+        this.role = role;
+    }
 }

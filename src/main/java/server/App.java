@@ -48,7 +48,8 @@ public class App
 
 		Commands com = new Commands();
 
-		System.out.println(com.studentGrade(2,"1",0));
+		com.decideRequest(1,false);
+		//System.out.println();
 
 	}
 
