@@ -380,12 +380,24 @@ public class Commands {
         return gson.toJson(ce);
     }
     void submitOnlineExam (ArrayList<clientAnswer> arr, int courseID, String studentID){
+
+        int rightAnswers = 0;
         EntityManager em = App.session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
         Course c = em.getReference(Course.class, courseID);
         Student s = em.getReference(Student.class, studentID);
 
+        String hql2 = "SELECT g.student FROM Grade g WHERE g.course = " + courseID + " AND g.student = " + studentID;
+        List<Student> l2 = listFrom(hql2,Student.class);
+        if(l2.size() == 0) {
+            Grade g = new Grade();
+            g.setStudent(s);
+            g.setCourse(c);
+            em.persist(g);
+        }
+
         for (clientAnswer ca : arr){
+            rightAnswers += (ca.answer == 0 ? 1 : 0);
             Answer newA = new Answer();
             newA.setAnswer(ca.answer);
             Question q = em.getReference(Question.class,ca.questionId);
@@ -394,6 +406,8 @@ public class Commands {
             newA.setQuestion(q);
             em.persist(newA);
         }
+
+
 
         em.getTransaction().commit();
         em.close();
@@ -471,6 +485,19 @@ public class Commands {
 
     String coursesByTeacher (String teacherID, int onlyConfirmed){
         String hql = "SELECT g.course , AVG(g.grade) FROM Grade g WHERE g.course.teacher = " + teacherID + (onlyConfirmed == 0 ? "" : " AND g.confirmed = 1") + " GROUP BY g.course";
+        List<Object[]> arr = listFrom(hql,Object[].class);
+
+        ArrayList<clientCourse> cs = new ArrayList<>();
+        for(Object[] o : arr){
+            Course s = (Course)o[0];
+            Double avg = (Double) o[1];
+            cs.add(new clientCourse(s.getName(),s.getId(),s.getOnline(),avg));
+        }
+        return gson.toJson(cs);
+    }
+
+    String examsByTeacher(String teacherID , int onlyConfirmed){
+        String hql = "SELECT g.course , AVG(g.grade) FROM Grade g WHERE g.course.exam.teacher = " + teacherID + (onlyConfirmed == 0 ? "" : " AND g.confirmed = 1") + " GROUP BY g.course";
         List<Object[]> arr = listFrom(hql,Object[].class);
 
         ArrayList<clientCourse> cs = new ArrayList<>();

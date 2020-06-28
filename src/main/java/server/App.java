@@ -49,7 +49,9 @@ public class App
 		Commands com = new Commands();
 
 
-		System.out.println(com.coursesByTeacher("7",1));
+//		String hql = "SELECT COUNT(*) FROM questions_exams qe WHERE qe.Exam_id = " + 1;
+//		Long i = com.getFirst(hql,Long.class);
+//		System.out.println(i);
 
 	}
 

@@ -37,12 +37,20 @@ public class SimpleChatServer extends AbstractServer {
 	@Override
 	protected void clientConnected(ConnectionToClient client) {
 		super.clientConnected(client);
+
+		try {
+			client.sendToClient("hi beeech");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		System.out.println("Client connected: " + client.getInetAddress());
 	}
 
 	public static void main(String[] args) throws IOException {
 		if (args.length != 1) {
 			System.out.println("Required argument: <port>");
+			SimpleChatServer server = new SimpleChatServer(Integer.parseInt("1000"));
+			server.listen();
 		} else {
 			SimpleChatServer server = new SimpleChatServer(Integer.parseInt(args[0]));
 			server.listen();
