@@ -37,12 +37,6 @@ public class SimpleChatServer extends AbstractServer {
 	@Override
 	protected void clientConnected(ConnectionToClient client) {
 		super.clientConnected(client);
-
-		try {
-			client.sendToClient("hi beeech");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		System.out.println("Client connected: " + client.getInetAddress());
 	}
 
