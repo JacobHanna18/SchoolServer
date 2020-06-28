@@ -18,31 +18,31 @@ public class Commands {
     String currentUser;
     int userType;
     static Gson gson = new Gson();
-    String LogIn (String user, String password){
+    String LogIn (String userID, String password){
         JSONObject js = new JSONObject();
         clientUser cu = new clientUser();
-        cu.id = user;
+        cu.id = userID;
         cu.role = 0;
-        Student s = App.session.get(Student.class,user);
+        Student s = App.session.get(Student.class,userID);
         if(s != null){
             if(s.getPass().equals(password)){
-                currentUser = user;
+                currentUser = userID;
                 userType = cu.role = 1;
                 cu.name = s.getName();
             }
         }
-        Teacher t = App.session.get(Teacher.class,user);
+        Teacher t = App.session.get(Teacher.class,userID);
         if(t != null){
             if(t.getPass().equals(password)){
-                currentUser = user;
+                currentUser = userID;
                 userType = cu.role = 2;
                 cu.name = t.getName();
             }
         }
-        Principle p = App.session.get(Principle.class,user);
+        Principle p = App.session.get(Principle.class,userID);
         if(p != null){
             if(p.getPass().equals(password)){
-                currentUser = user;
+                currentUser = userID;
                 userType = cu.role = 3;
                 cu.name = p.getName();
             }
@@ -91,8 +91,8 @@ public class Commands {
         em.close();
     }
 
-    String startExam (int courseID, int accessID, int duration, int online){
-        String hql = "FROM Course c WHERE c.AccessCode = " + accessID;
+    String startExam (int courseID, int AccessCode, int duration, int online){
+        String hql = "FROM Course c WHERE c.AccessCode = " + AccessCode;
         List<Course> l = listFrom(hql,Course.class);
         if(l.size() != 0){
             return gson.toJson(new clientCompletion(false));
@@ -103,7 +103,7 @@ public class Commands {
         Course c = em.getReference(Course.class,courseID);
 
         c.setStartTime((int) (System.currentTimeMillis() / 1000));
-        c.setAccessCode(accessID);
+        c.setAccessCode(AccessCode);
         c.setDuration(duration);
         c.setOnline(online);
 
@@ -113,8 +113,8 @@ public class Commands {
         return gson.toJson(new clientCompletion(true));
     }
 
-    String subjectQuestionList (int subjectId){
-        String hql = "FROM Question q WHERE q.subject = " + subjectId;
+    String subjectQuestionList (int subjectID){
+        String hql = "FROM Question q WHERE q.subject = " + subjectID;
         List<Question> l = listFrom(hql,Question.class);
         ArrayList<clientQuestion> arr = new ArrayList<>();
         for (Question q : l){
@@ -123,8 +123,8 @@ public class Commands {
         return gson.toJson(arr);
     }
 
-    String subjectExamList (int subjectId){
-        String hql = "FROM Exam e WHERE e.subject = " + subjectId;
+    String subjectExamList (int subjectID){
+        String hql = "FROM Exam e WHERE e.subject = " + subjectID;
         List<Exam> l = listFrom(hql,Exam.class);
         ArrayList<clientExam> arr = new ArrayList<>();
         for (Exam e : l){
@@ -223,6 +223,7 @@ public class Commands {
         }
         return gson.toJson(e);
     }
+
     String examsFromTeacher (String teacherID){
         String hql = "FROM Exam e WHERE e.teacher = " + teacherID ;
         List<Exam> l = listFrom(hql,Exam.class);
@@ -379,6 +380,7 @@ public class Commands {
         }
         return gson.toJson(ce);
     }
+
     void submitOnlineExam (ArrayList<clientAnswer> arr, int courseID, String studentID){
 
         int rightAnswers = 0;
