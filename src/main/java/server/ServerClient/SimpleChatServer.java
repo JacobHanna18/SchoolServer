@@ -60,6 +60,7 @@ public class SimpleChatServer extends AbstractServer {
                     client.sendToClient(cmd.questionsOfTeacher(ca.teacherID));
                     break;
                 case examByTeacher:
+                	System.out.println(cmd.examsFromTeacher(ca.teacherID));
                     client.sendToClient(cmd.examsFromTeacher(ca.teacherID));
                     break;
 				case getExam:
