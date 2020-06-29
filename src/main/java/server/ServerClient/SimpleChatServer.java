@@ -107,6 +107,12 @@ public class SimpleChatServer extends AbstractServer {
 				case submitOnlineExam:
 					cmd.submitOnlineExam(ca.arr,ca.courseID,ca.studentID);
 					break;
+				case requestList:
+					client.sendToClient(cmd.allRequests(0));
+					break;
+				case decideRequest:
+					cmd.decideRequest(ca.courseID,ca.accept);
+					break;
 
 
 

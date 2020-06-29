@@ -25,6 +25,8 @@ public enum Operation {
     ,getGradesOfCourse // get all grades in course
     ,takeExam // take exam for student
     ,submitOnlineExam // save student answers for exam
+    ,requestList // get all requests
+    ,decideRequest // decide if yes or no
 
 
 }

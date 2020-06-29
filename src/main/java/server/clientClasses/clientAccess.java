@@ -32,4 +32,6 @@ public class clientAccess {
 
     public int newGrade;
     public String reason;
+
+    public boolean accept;
 }
