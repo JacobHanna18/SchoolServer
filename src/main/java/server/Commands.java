@@ -18,8 +18,7 @@ import java.util.List;
 
 public class Commands {
     public static Session session;
-    String currentUser;
-    int userType;
+
     static Gson gson = new Gson();
     public clientUser LogIn (String userID, String password){
         JSONObject js = new JSONObject();
@@ -29,31 +28,25 @@ public class Commands {
         Student s = session.get(Student.class,userID);
         if(s != null){
             if(s.getPass().equals(password)){
-                currentUser = userID;
-                userType = cu.role = 1;
                 cu.name = s.getName();
             }
         }
         Teacher t = session.get(Teacher.class,userID);
         if(t != null){
             if(t.getPass().equals(password)){
-                currentUser = userID;
-                userType = cu.role = 2;
                 cu.name = t.getName();
             }
         }
         Principle p = session.get(Principle.class,userID);
         if(p != null){
             if(p.getPass().equals(password)){
-                currentUser = userID;
-                userType = cu.role = 3;
                 cu.name = p.getName();
             }
         }
         return cu;
     }
 
-    String teacherSubjectList (String teacherID){
+    public String teacherSubjectList (String teacherID){
         String hql = "SELECT c.subject FROM Course c WHERE c.teacher = " + teacherID;
         List<Subject> l = listFrom(hql,Subject.class);
         ArrayList<clientSubject> arr = new ArrayList<>();
@@ -63,7 +56,7 @@ public class Commands {
         return gson.toJson(arr);
     }
 
-    String getExam (int examID){
+    public String getExam (int examID){
         Exam e = session.get(Exam.class, examID);
 
         clientExam exam = new clientExam(e.getId(), e.getTeacher().getName());
@@ -73,13 +66,13 @@ public class Commands {
         return gson.toJson(exam);
     }
 
-    String examFromCourse (int courseID){
+    public String examFromCourse (int courseID){
         Course c = session.get(Course.class, courseID);
 
         return getExam(c.getExam().getId());
     }
 
-    void selectExam (int examID, int courseID){
+    public void selectExam (int examID, int courseID){
         EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
 
@@ -93,7 +86,7 @@ public class Commands {
         em.close();
     }
 
-    String startExam (int courseID, int AccessCode, int duration, int online){
+    public String startExam (int courseID, int AccessCode, int duration, int online){
         String hql = "FROM Course c WHERE c.AccessCode = " + AccessCode;
         List<Course> l = listFrom(hql,Course.class);
         if(l.size() != 0){
@@ -115,7 +108,7 @@ public class Commands {
         return gson.toJson(new clientCompletion(true));
     }
 
-    String subjectQuestionList (int subjectID){
+    public String subjectQuestionList (int subjectID){
         String hql = "FROM Question q WHERE q.subject = " + subjectID;
         List<Question> l = listFrom(hql,Question.class);
         ArrayList<clientQuestion> arr = new ArrayList<>();
@@ -125,7 +118,7 @@ public class Commands {
         return gson.toJson(arr);
     }
 
-    String subjectExamList (int subjectID){
+    public String subjectExamList (int subjectID){
         String hql = "FROM Exam e WHERE e.subject = " + subjectID;
         List<Exam> l = listFrom(hql,Exam.class);
         ArrayList<clientExam> arr = new ArrayList<>();
@@ -135,7 +128,7 @@ public class Commands {
         return gson.toJson(arr);
     }
 
-    void createExam (clientExam e, int subjectID, String teacherID){
+    public void createExam (clientExam e, int subjectID, String teacherID){
         EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
         Exam newExam = new Exam();
@@ -153,7 +146,7 @@ public class Commands {
         em.close();
     }
 
-    void createQuestion (clientQuestion q, int subjectID, String teacherID){
+    public void createQuestion (clientQuestion q, int subjectID, String teacherID){
         EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
         Question newQ = new Question(q.question,q.right,q.wrong1,q.wrong2,q.wrong3);
@@ -167,19 +160,19 @@ public class Commands {
         em.close();
     }
 
-    String courseAverage (int courseID, int onlyConfirmed){
+    public String courseAverage (int courseID, int onlyConfirmed){
         String hql = "SELECT avg(grade) FROM Grade g where g.course = " + courseID + (onlyConfirmed==1 ? " AND g.confirmed = 1" : "");
         Double avg = getFirst(hql, Double.class);
         return gson.toJson(avg);
     }
 
-    String studentAverage (String studentID, int onlyConfirmed){
+    public String studentAverage (String studentID, int onlyConfirmed){
         String hql = "SELECT avg(grade) FROM Grade g where g.student = " + studentID + (onlyConfirmed==1 ? " AND g.confirmed = 1" : "");
         Double avg = getFirst(hql, Double.class);
         return gson.toJson(avg);
     }
 
-    String studentGrade (int courseID, String studentID, int onlyConfirmed){
+    public String studentGrade (int courseID, String studentID, int onlyConfirmed){
         String hql = "FROM Answer a WHERE a.course = " + courseID + " AND a.student = " + studentID;
         List<Answer> l = listFrom(hql,Answer.class);
 
@@ -194,6 +187,7 @@ public class Commands {
         }
         cg.course = new clientCourse(g.getCourse().getName(), g.getCourse().getId(),g.getCourse().getOnline());
         cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
+        cg.courseName = g.getCourse().getName();
 
         for (Answer a : l){
             clientAnswer ca = new clientAnswer(a.getAnswer(),a.getQuestion().getId(), a.getCourse().getId());
@@ -205,7 +199,7 @@ public class Commands {
         return gson.toJson(cg);
     }
 
-    String questionsOfTeacher (String teacherID){
+    public String questionsOfTeacher (String teacherID){
         String hql = "FROM Question q WHERE q.teacher = " + teacherID ;
         List<Question> l = listFrom(hql,Question.class);
         ArrayList<clientQuestion> arr = new ArrayList<>();
@@ -215,7 +209,7 @@ public class Commands {
         return gson.toJson(arr);
     }
 
-    String courseStudents (int courseID){
+    public String courseStudents (int courseID){
         String hql = "SELECT g.student FROM Grade g WHERE g.course = " + courseID;
         List<Student> l = listFrom(hql,Student.class);
         Course dbc = session.get(Course.class, courseID);
@@ -226,7 +220,7 @@ public class Commands {
         return gson.toJson(e);
     }
 
-    String examsFromTeacher (String teacherID){
+    public String examsFromTeacher (String teacherID){
         String hql = "FROM Exam e WHERE e.teacher = " + teacherID ;
         List<Exam> l = listFrom(hql,Exam.class);
         ArrayList<clientExam> arr = new ArrayList<>();
@@ -240,7 +234,7 @@ public class Commands {
         return gson.toJson(arr);
         }
 
-    String coursesOfSubjectTeacher (int subjectId, String teacherID){
+    public String coursesOfSubjectTeacher (int subjectId, String teacherID){
         String hql = "FROM Course c WHERE c.subject = " + subjectId + " AND c.teacher = " + teacherID;
         List<Course> l = listFrom(hql,Course.class);
         ArrayList<clientCourse> arr = new ArrayList<>();
@@ -250,7 +244,7 @@ public class Commands {
         return gson.toJson(arr);
     }
 
-    void newRequest (int courseID, int addedTime, String exp){
+    public void newRequest (int courseID, int addedTime, String exp){
         EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
 
@@ -266,7 +260,7 @@ public class Commands {
         em.close();
     }
 
-    void confirmGrade (String studentID, int courseID){
+    public void confirmGrade (String studentID, int courseID){
         EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
 
@@ -281,7 +275,7 @@ public class Commands {
         em.close();
     }
 
-    void changeAndConfirmGrade (String studentID, int courseID, int newGrade, String reason){
+    public void changeAndConfirmGrade (String studentID, int courseID, int newGrade, String reason){
 
         EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
@@ -299,7 +293,7 @@ public class Commands {
         em.close();
     }
 
-    String getGrade (String studentID, int courseID){
+    public String getGrade (String studentID, int courseID){
         String hql = "FROM Grade g WHERE g.course = " + courseID + " AND g.student = " + studentID;
 
         Grade g = getFirst(hql,Grade.class);
@@ -307,10 +301,11 @@ public class Commands {
         cg.grade = g.getGrade();
         cg.course = new clientCourse(g.getCourse().getName(), g.getCourse().getId(),g.getCourse().getOnline());
         cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
+        cg.courseName = g.getCourse().getName();
         return gson.toJson(cg);
     }
 
-    String getGradesOfCourse (int courseID){
+    public String getGradesOfCourse (int courseID){
         String hql = "FROM Grade g WHERE g.course = " + courseID;
         List<Grade> gs = listFrom(hql,Grade.class);
 
@@ -321,13 +316,14 @@ public class Commands {
             cg.grade = g.getGrade();
             cg.course = new clientCourse(g.getCourse().getName(), g.getCourse().getId(),g.getCourse().getOnline());
             cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
+            cg.courseName = g.getCourse().getName();
             cgs.add(cg);
         }
 
         return gson.toJson(cgs);
     }
 
-    String getGradesOfStudent (String studentID, int onlyConfirmed){
+    public String getGradesOfStudent (String studentID, int onlyConfirmed){
         String hql = "FROM Grade g WHERE g.student = " + studentID;
         List<Grade> gs = listFrom(hql,Grade.class);
 
@@ -344,13 +340,14 @@ public class Commands {
             cg.grade = g.getGrade();
             cg.course = new clientCourse(g.getCourse().getName(), g.getCourse().getId(),g.getCourse().getOnline());
             cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
+            cg.courseName = g.getCourse().getName();
             cgs.add(cg);
         }
 
         return gson.toJson(cgs);
     }
 
-    String takeExam (int AccessCode, String studentID){
+    public String takeExam (int AccessCode, String studentID){
         String hql = "FROM Course c WHERE c.AccessCode = " + AccessCode;
         Course c = getFirst(hql, Course.class);
 
@@ -383,7 +380,7 @@ public class Commands {
         return gson.toJson(ce);
     }
 
-    void submitOnlineExam (ArrayList<clientAnswer> arr, int courseID, String studentID){
+    public void submitOnlineExam (ArrayList<clientAnswer> arr, int courseID, String studentID){
 
         int rightAnswers = 0;
         EntityManager em = session.getEntityManagerFactory().createEntityManager();
@@ -430,7 +427,20 @@ public class Commands {
         return gson.toJson(ts);
     }
 
-    String allStudents (){
+    public String allSubjects(){
+        String hql = "SELECT s FROM Subject s";
+        List<Subject> arr = listFrom(hql,Subject.class);
+
+        ArrayList<clientSubject> ss = new ArrayList<>();
+
+        for( Subject s: arr){
+            ss.add(new clientSubject(s.getName(),s.getId()));
+        }
+
+        return gson.toJson(ss);
+    }
+
+    public String allStudents (){
         String hql = "SELECT s FROM Student s";
         List<Student> arr = listFrom(hql,Student.class);
 
@@ -443,7 +453,7 @@ public class Commands {
         return gson.toJson(ss);
     }
 
-    String allRequests(int onlyActive){
+    public String allRequests(int onlyActive){
         String hql = "SELECT r FROM Request r" + (onlyActive == 0 ? "" : " WHERE r.active = 1");
         List<Request> arr = listFrom(hql,Request.class);
 
@@ -462,7 +472,7 @@ public class Commands {
         return gson.toJson(ss);
     }
 
-    void decideRequest(int requestID, boolean accept){
+    public void decideRequest(int requestID, boolean accept){
         Request r = session.get(Request.class,requestID);
         r.setActive(0);
         session.update(r);
@@ -474,7 +484,7 @@ public class Commands {
         session.getTransaction().commit();
     }
 
-    String coursesBySubject (int subjectID, int onlyConfirmed){
+    public String coursesBySubject (int subjectID, int onlyConfirmed){
         String hql = "SELECT g.course , AVG(g.grade) FROM Grade g WHERE g.course.subject = " + subjectID + (onlyConfirmed == 0 ? "" : " AND g.confirmed = 1") + " GROUP BY g.course";
         List<Object[]> arr = listFrom(hql,Object[].class);
 
@@ -487,7 +497,7 @@ public class Commands {
         return gson.toJson(cs);
     }
 
-    String coursesByTeacher (String teacherID, int onlyConfirmed){
+    public String coursesByTeacher (String teacherID, int onlyConfirmed){
         String hql = "SELECT g.course , AVG(g.grade) FROM Grade g WHERE g.course.teacher = " + teacherID + (onlyConfirmed == 0 ? "" : " AND g.confirmed = 1") + " GROUP BY g.course";
         List<Object[]> arr = listFrom(hql,Object[].class);
 
@@ -500,7 +510,7 @@ public class Commands {
         return gson.toJson(cs);
     }
 
-    String examsByTeacher(String teacherID , int onlyConfirmed){
+    public String examsByTeacher(String teacherID , int onlyConfirmed){
         String hql = "SELECT g.course , AVG(g.grade) FROM Grade g WHERE g.course.exam.teacher = " + teacherID + (onlyConfirmed == 0 ? "" : " AND g.confirmed = 1") + " GROUP BY g.course";
         List<Object[]> arr = listFrom(hql,Object[].class);
 
@@ -522,8 +532,6 @@ public class Commands {
         Query<T> query = session.createQuery(hql, obj);
         return query.list();
     }
-
-
 
 }
 
