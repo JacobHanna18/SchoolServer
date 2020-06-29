@@ -62,6 +62,51 @@ public class SimpleChatServer extends AbstractServer {
                 case examByTeacher:
                     client.sendToClient(cmd.examsFromTeacher(ca.teacherID));
                     break;
+				case getExam:
+					client.sendToClient(cmd.getExam(ca.examID));
+					break;
+				case courseExam:
+					client.sendToClient(cmd.examFromCourse(ca.courseID));
+					break;
+				case selectExamForCourse:
+					cmd.selectExam(ca.examID,ca.courseID);
+					break;
+				case startExam:
+					client.sendToClient(cmd.startExam(ca.courseID,ca.AccessCode,ca.duration,ca.online));
+					break;
+				case createExam:
+					cmd.createExam(ca.e,ca.subjectID,ca.teacherID);
+					break;
+				case createQuestion:
+					cmd.createQuestion(ca.q,ca.subjectID,ca.teacherID);
+					break;
+				case studentsFromCourse:
+					client.sendToClient(cmd.courseStudents(ca.courseID));
+					break;
+				case coursesFromSubjectAndTeacher:
+					client.sendToClient(cmd.coursesOfSubjectTeacher(ca.subjectID,ca.teacherID));
+					break;
+				case newRequest:
+					cmd.newRequest(ca.courseID,ca.addedTime,ca.exp);
+					break;
+				case confirmGrade:
+					cmd.confirmGrade(ca.studentID,ca.courseID);
+					break;
+				case changeAndConfirmGrade:
+					cmd.changeAndConfirmGrade(ca.studentID,ca.courseID,ca.newGrade,ca.reason);
+					break;
+				case getGrade:
+					client.sendToClient(cmd.getGrade(ca.studentID,ca.courseID));
+					break;
+				case getGradesOfCourse:
+					client.sendToClient(cmd.getGradesOfCourse(ca.courseID));
+					break;
+				case takeExam:
+					client.sendToClient(cmd.takeExam(ca.AccessCode,ca.studentID));
+					break;
+				case submitOnlineExam:
+					cmd.submitOnlineExam(ca.arr,ca.courseID,ca.studentID);
+					break;
 
 
 
