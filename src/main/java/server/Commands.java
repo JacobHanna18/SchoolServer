@@ -29,18 +29,21 @@ public class Commands {
         if(s != null){
             if(s.getPass().equals(password)){
                 cu.name = s.getName();
+                cu.role = 1;
             }
         }
         Teacher t = session.get(Teacher.class,userID);
         if(t != null){
             if(t.getPass().equals(password)){
                 cu.name = t.getName();
+                cu.role = 2;
             }
         }
         Principle p = session.get(Principle.class,userID);
         if(p != null){
             if(p.getPass().equals(password)){
                 cu.name = p.getName();
+                cu.role = 3;
             }
         }
         return cu;
@@ -59,7 +62,7 @@ public class Commands {
     public String getExam (int examID){
         Exam e = session.get(Exam.class, examID);
 
-        clientExam exam = new clientExam(e.getId(), e.getTeacher().getName());
+        clientExam exam = new clientExam(e.getId(), e.getTeacher().getName(),e.getSubject().getName());
         for (Question q : e.getQuestions()){
             exam.questions.add(new clientQuestion(q.getId(), q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3(),q.getTeacher().getName()));
         }
@@ -123,7 +126,7 @@ public class Commands {
         List<Exam> l = listFrom(hql,Exam.class);
         ArrayList<clientExam> arr = new ArrayList<>();
         for (Exam e : l){
-            arr.add(new clientExam(e.getId(),e.getTeacher().getName()));
+            arr.add(new clientExam(e.getId(),e.getTeacher().getName(),e.getSubject().getName()));
         }
         return gson.toJson(arr);
     }
@@ -225,7 +228,7 @@ public class Commands {
         List<Exam> l = listFrom(hql,Exam.class);
         ArrayList<clientExam> arr = new ArrayList<>();
         for (Exam e : l){
-            clientExam ce = new clientExam(e.getId(),(e.getTeacher().getName()));
+            clientExam ce = new clientExam(e.getId(),(e.getTeacher().getName()),e.getSubject().getName());
             for(Question q : e.getQuestions()){
                 ce.questionIds.add(q.getId());
             }

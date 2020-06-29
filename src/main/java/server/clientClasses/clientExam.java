@@ -8,11 +8,14 @@ public class clientExam {
     public int id;
     public ArrayList<Integer> questionIds = new ArrayList<Integer>();
 
+    public String subjectName;
+
     public int online;
 
-    public clientExam(int id, String teacher) {
+    public clientExam(int id, String teacher, String subjectName) {
         this.id = id;
         this.teacher = teacher;
+        this.subjectName = subjectName;
     }
 
     public clientExam() {
