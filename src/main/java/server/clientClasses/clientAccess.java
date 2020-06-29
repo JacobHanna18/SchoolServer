@@ -15,6 +15,7 @@ public class clientAccess {
     public int examID;
     public int courseID;
     public int subjectID;
+    public int requestID;
 
     public clientExam e;
     public clientQuestion q;

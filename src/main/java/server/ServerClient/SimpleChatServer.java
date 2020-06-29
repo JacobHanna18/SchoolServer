@@ -112,7 +112,7 @@ public class SimpleChatServer extends AbstractServer {
 					client.sendToClient(cmd.allRequests(0));
 					break;
 				case decideRequest:
-					cmd.decideRequest(ca.courseID,ca.accept);
+					cmd.decideRequest(ca.requestID,ca.accept);
 					break;
 
 
