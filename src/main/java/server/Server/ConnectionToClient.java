@@ -4,6 +4,8 @@
 
 package server.Server;
 
+import server.clientClasses.clientUser;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -64,6 +66,8 @@ public class ConnectionToClient extends Thread
   * A reference to the Server that created this instance.
   */
   private AbstractServer server;
+
+  public clientUser user;
 
   /**
   * Sockets are used in the operating system as channels

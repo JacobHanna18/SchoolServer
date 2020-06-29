@@ -1,6 +1,5 @@
 package server;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.TypedQuery;
@@ -9,8 +8,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 
-import com.google.gson.Gson;
-import server.clientClasses.*;
 import server.entities.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -22,7 +19,7 @@ import org.hibernate.service.ServiceRegistry;
 
 public class App
 {
-	public static Session session;
+
 
 	private static SessionFactory getSessionFactory() throws HibernateException {
 		Configuration configuration =new Configuration();
@@ -44,51 +41,20 @@ public class App
 		return configuration.buildSessionFactory(serviceRegistry);
 	}
 
-	private static void initializeData() throws Exception {
-
-		Commands com = new Commands();
-
-
-//		String hql = "SELECT COUNT(*) FROM questions_exams qe WHERE qe.Exam_id = " + 1;
-//		Long i = com.getFirst(hql,Long.class);
-//		System.out.println(i);
-
-	}
-
-	public static <T> List<T> getAll(Class<T> object) {
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<T> criteriaQuery = builder.createQuery(object);
-		Root<T> rootEntry = criteriaQuery.from(object);
-		CriteriaQuery<T> allCriteriaQuery = criteriaQuery.select(rootEntry);
-		TypedQuery<T> allQuery = session.createQuery(allCriteriaQuery);
-		return allQuery.getResultList();
-	}
-
-	public static void main( String[] args )
+	public static void SetUp( )
 	{
-
 		try {
 
-			//Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
-
 			SessionFactory sessionFactory = getSessionFactory();
-			session = sessionFactory.openSession();
-			session.beginTransaction();
-
-			initializeData();
-
+			Commands.session = sessionFactory.openSession();
+			Commands.session.beginTransaction();
+			System.out.println("Connected to database");
 
 		} catch (Exception e) {
-			if (session != null) {
-				session.getTransaction().rollback();
+			if (Commands.session != null) {
+				Commands.session.getTransaction().rollback();
 			}
-
 			e.printStackTrace();
-		} finally {
-			if (session != null) {
-				session.close();
-				session.getSessionFactory().close();
-			}
 		}
 	}
 }

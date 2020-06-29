@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class clientAccess {
 
-    public int AccessType;
+    public Operation op;
 
     public String userID;
     public String password;

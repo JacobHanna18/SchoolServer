@@ -21,4 +21,5 @@ public class clientUser {
         this.id = id;
         this.role = role;
     }
+
 }

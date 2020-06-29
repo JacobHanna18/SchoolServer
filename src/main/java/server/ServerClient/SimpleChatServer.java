@@ -1,13 +1,20 @@
 package server.ServerClient;
+import com.google.gson.Gson;
+import server.App;
+import server.Commands;
 import server.Server.AbstractServer ;
 import server.Server.ConnectionToClient ;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import server.clientClasses.*;
 
 
 public class SimpleChatServer extends AbstractServer {
+
+	static public Gson gson = new Gson();
+	static public Commands cmd = new Commands();
 
 	public SimpleChatServer(int port) {
 		super(port);
@@ -18,11 +25,19 @@ public class SimpleChatServer extends AbstractServer {
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 
+		clientAccess ca = gson.fromJson(msg.toString(),clientAccess.class);
+
 		try {
-			// here we get the operation and call for Commands class with its enum
-			client.sendToClient("here we get the operation and call for Commands class with its enum");
+			switch (ca.op){
+				case logIn:
+					client.user = cmd.LogIn(ca.userID,ca.password);
+					client.sendToClient(gson.toJson(client.user));
+				case teacherList:
+					if(client.user.role == 3){
+						client.sendToClient(cmd.allTeachers());
+					}
+			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -41,10 +56,11 @@ public class SimpleChatServer extends AbstractServer {
 	}
 
 	public static void main(String[] args) throws IOException {
+		App.SetUp();
 		if (args.length != 1) {
-			System.out.println("Required argument: <port>");
 			SimpleChatServer server = new SimpleChatServer(Integer.parseInt("1000"));
 			server.listen();
+			System.out.println("Server connected");
 		} else {
 			SimpleChatServer server = new SimpleChatServer(Integer.parseInt(args[0]));
 			server.listen();

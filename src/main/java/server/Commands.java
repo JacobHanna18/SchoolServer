@@ -1,8 +1,10 @@
 package server;
 
 import com.google.gson.Gson;
+import org.hibernate.Session;
 import org.hibernate.jpa.boot.spi.EntityManagerFactoryBuilder;
 import org.hibernate.query.Query;
+import server.App;
 import server.clientClasses.*;
 import server.entities.*;
 
@@ -15,15 +17,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Commands {
+    public static Session session;
     String currentUser;
     int userType;
     static Gson gson = new Gson();
-    String LogIn (String userID, String password){
+    public clientUser LogIn (String userID, String password){
         JSONObject js = new JSONObject();
         clientUser cu = new clientUser();
         cu.id = userID;
         cu.role = 0;
-        Student s = App.session.get(Student.class,userID);
+        Student s = session.get(Student.class,userID);
         if(s != null){
             if(s.getPass().equals(password)){
                 currentUser = userID;
@@ -31,7 +34,7 @@ public class Commands {
                 cu.name = s.getName();
             }
         }
-        Teacher t = App.session.get(Teacher.class,userID);
+        Teacher t = session.get(Teacher.class,userID);
         if(t != null){
             if(t.getPass().equals(password)){
                 currentUser = userID;
@@ -39,7 +42,7 @@ public class Commands {
                 cu.name = t.getName();
             }
         }
-        Principle p = App.session.get(Principle.class,userID);
+        Principle p = session.get(Principle.class,userID);
         if(p != null){
             if(p.getPass().equals(password)){
                 currentUser = userID;
@@ -47,8 +50,7 @@ public class Commands {
                 cu.name = p.getName();
             }
         }
-
-        return gson.toJson(cu);
+        return cu;
     }
 
     String teacherSubjectList (String teacherID){
@@ -62,7 +64,7 @@ public class Commands {
     }
 
     String getExam (int examID){
-        Exam e = App.session.get(Exam.class, examID);
+        Exam e = session.get(Exam.class, examID);
 
         clientExam exam = new clientExam(e.getId(), e.getTeacher().getName());
         for (Question q : e.getQuestions()){
@@ -72,13 +74,13 @@ public class Commands {
     }
 
     String examFromCourse (int courseID){
-        Course c = App.session.get(Course.class, courseID);
+        Course c = session.get(Course.class, courseID);
 
         return getExam(c.getExam().getId());
     }
 
     void selectExam (int examID, int courseID){
-        EntityManager em = App.session.getEntityManagerFactory().createEntityManager();
+        EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
 
         Course c = em.getReference(Course.class,courseID);
@@ -97,7 +99,7 @@ public class Commands {
         if(l.size() != 0){
             return gson.toJson(new clientCompletion(false));
         }
-        EntityManager em = App.session.getEntityManagerFactory().createEntityManager();
+        EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
 
         Course c = em.getReference(Course.class,courseID);
@@ -134,7 +136,7 @@ public class Commands {
     }
 
     void createExam (clientExam e, int subjectID, String teacherID){
-        EntityManager em = App.session.getEntityManagerFactory().createEntityManager();
+        EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
         Exam newExam = new Exam();
 
@@ -152,7 +154,7 @@ public class Commands {
     }
 
     void createQuestion (clientQuestion q, int subjectID, String teacherID){
-        EntityManager em = App.session.getEntityManagerFactory().createEntityManager();
+        EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
         Question newQ = new Question(q.question,q.right,q.wrong1,q.wrong2,q.wrong3);
         Subject s = em.getReference(Subject.class,subjectID);
@@ -216,7 +218,7 @@ public class Commands {
     String courseStudents (int courseID){
         String hql = "SELECT g.student FROM Grade g WHERE g.course = " + courseID;
         List<Student> l = listFrom(hql,Student.class);
-        Course dbc = App.session.get(Course.class, courseID);
+        Course dbc = session.get(Course.class, courseID);
         clientCourse e = new clientCourse(dbc.getName(),dbc.getId(),dbc.getOnline());
         for (Student s : l){
             e.students.add(new clientUser(s.getName(),s.getId()));
@@ -249,7 +251,7 @@ public class Commands {
     }
 
     void newRequest (int courseID, int addedTime, String exp){
-        EntityManager em = App.session.getEntityManagerFactory().createEntityManager();
+        EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
 
         Request r = new Request();
@@ -265,7 +267,7 @@ public class Commands {
     }
 
     void confirmGrade (String studentID, int courseID){
-        EntityManager em = App.session.getEntityManagerFactory().createEntityManager();
+        EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
 
         String hql = "FROM Grade g WHERE g.course = " + courseID + " AND g.student = " + studentID;
@@ -281,7 +283,7 @@ public class Commands {
 
     void changeAndConfirmGrade (String studentID, int courseID, int newGrade, String reason){
 
-        EntityManager em = App.session.getEntityManagerFactory().createEntityManager();
+        EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
 
         String hql = "FROM Grade g WHERE g.course = " + courseID + " AND g.student = " + studentID;
@@ -355,12 +357,12 @@ public class Commands {
         String hql2 = "SELECT g.student FROM Grade g WHERE g.course = " + c.getId() + " AND g.student = " + studentID;
         List<Student> l2 = listFrom(hql2,Student.class);
         if(l2.size() == 0) {
-            Student s = App.session.get(Student.class, studentID);
+            Student s = session.get(Student.class, studentID);
             Grade g = new Grade();
             g.setStudent(s);
             g.setCourse(c);
-            App.session.save(g);
-            App.session.getTransaction().commit();
+            session.save(g);
+            session.getTransaction().commit();
         }
 
         clientExam ce = new clientExam();
@@ -384,7 +386,7 @@ public class Commands {
     void submitOnlineExam (ArrayList<clientAnswer> arr, int courseID, String studentID){
 
         int rightAnswers = 0;
-        EntityManager em = App.session.getEntityManagerFactory().createEntityManager();
+        EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
         Course c = em.getReference(Course.class, courseID);
         Student s = em.getReference(Student.class, studentID);
@@ -415,7 +417,7 @@ public class Commands {
         em.close();
     }
 
-    String allTeachers (){
+    public String allTeachers (){
         String hql = "SELECT t FROM Teacher t";
         List<Teacher> arr = listFrom(hql,Teacher.class);
 
@@ -461,15 +463,15 @@ public class Commands {
     }
 
     void decideRequest(int requestID, boolean accept){
-        Request r = App.session.get(Request.class,requestID);
+        Request r = session.get(Request.class,requestID);
         r.setActive(0);
-        App.session.update(r);
+        session.update(r);
         if(accept){
             Course c = r.getCourse();
             c.setDuration(c.getDuration() + r.getTimeAdded());
-            App.session.update(c);
+            session.update(c);
         }
-        App.session.getTransaction().commit();
+        session.getTransaction().commit();
     }
 
     String coursesBySubject (int subjectID, int onlyConfirmed){
@@ -512,12 +514,12 @@ public class Commands {
     }
 
     <T> T getFirst (String hql, Class<T> obj){
-        Query<T> query = App.session.createQuery(hql, obj);
+        Query<T> query = session.createQuery(hql, obj);
         return query.getSingleResult();
     }
 
     <T> List<T> listFrom (String hql, Class<T> obj ){
-        Query<T> query = App.session.createQuery(hql, obj);
+        Query<T> query = session.createQuery(hql, obj);
         return query.list();
     }
 
