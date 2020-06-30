@@ -69,6 +69,8 @@ public class ConnectionToClient extends Thread
 
   public clientUser user;
 
+  public int tries = 5;
+
   /**
   * Sockets are used in the operating system as channels
   * of communication between two processes.

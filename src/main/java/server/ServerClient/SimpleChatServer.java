@@ -38,8 +38,13 @@ public class SimpleChatServer extends AbstractServer {
 		try {
 			switch (ca.op){
 				case logIn:
-					client.user = cmd.LogIn(ca.userID,ca.password);
-					client.sendToClient(gson.toJson(client.user));
+					if(client.tries > 0) {
+						client.user = cmd.LogIn(ca.userID, ca.password);
+						if(client.user.role == 0){
+							client.tries--;
+						}
+						client.sendToClient(gson.toJson(client.user));
+					}
 					break;
 				case teacherList:
 					if(client.user.role == 3){
