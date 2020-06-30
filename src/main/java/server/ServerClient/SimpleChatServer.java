@@ -226,10 +226,6 @@ public class SimpleChatServer extends AbstractServer {
 
 		App.SetUp();
 
-		clientGrade g = gson.fromJson(cmd.downloadStudentExam("2",2),clientGrade.class);
-		System.out.println(g.file);
-		toFile(g.file,"C:\\Users\\jacob\\Documents\\downloaded.docx");
-
 		if (args.length != 1) {
 			SimpleChatServer server = new SimpleChatServer(Integer.parseInt("1000"));
 			server.listen();
