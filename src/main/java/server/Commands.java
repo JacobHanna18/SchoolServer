@@ -366,6 +366,24 @@ public class Commands {
 
         return gson.toJson(cgs);
     }
+    public String getGradesOfTeacher (String teacherID){
+        String hql = "FROM Grade g WHERE g.course.teacher = " + teacherID;
+        List<Grade> gs = listFrom(hql,Grade.class);
+
+        ArrayList <clientGrade> cgs = new ArrayList<>();
+
+        for(Grade g : gs){
+            clientGrade cg = new clientGrade();
+            cg.grade = g.getGrade();
+            cg.course = new clientCourse(g.getCourse().getName(), g.getCourse().getId(),g.getCourse().getOnline());
+            cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
+            cg.courseName = g.getCourse().getName();
+            cg.studentname = g.getStudent().getName();
+            cgs.add(cg);
+        }
+
+        return gson.toJson(cgs);
+    }
 
     public String getGradesOfStudent (String studentID, int onlyConfirmed){
         String hql = "FROM Grade g WHERE g.student = " + studentID;

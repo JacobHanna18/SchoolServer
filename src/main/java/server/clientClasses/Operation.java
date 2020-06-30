@@ -121,6 +121,10 @@ public enum Operation {
     //PRINCIPLE : (teacherID) -> [clientExam]
     ,subjectTeacherExamList
 
+    // get all grades in course
+    // TEACHER/PRINCIPLE : (teacherID) -> [clientGrade]
+    ,getGradesOfTeacher
+
     // courses list by subject
     // TEACHER/PRINCIPLE : (subjectID) -> [clientCourse]
     ,coursesOfSubject

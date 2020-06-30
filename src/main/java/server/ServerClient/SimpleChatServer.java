@@ -200,6 +200,11 @@ public class SimpleChatServer extends AbstractServer {
 						client.sendToClient(cmd.coursesOfSubject(ca.subjectID));
 					}
 					break;
+				case getGradesOfTeacher:
+					if(client.user.role > 1) {
+						client.sendToClient(cmd.getGradesOfTeacher(ca.teacherID));
+					}
+					break;
 
 
 			}
