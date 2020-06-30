@@ -17,6 +17,8 @@ public class clientAccess {
     public int subjectID;
     public int requestID;
 
+    public byte[] file;
+
     public clientExam e;
     public clientQuestion q;
     public ArrayList<clientAnswer> arr;

@@ -1,32 +1,122 @@
 package server.clientClasses;
 
 public enum Operation {
-    logIn // login user // (userID, password) -> clientUser
-    ,teacherList //get list of all teachers // () -> [clientUser]
-    ,studentList //get all students // () -> [clientUser]
-    ,gradesList //get grades of student // (studentID) -> [clientGrade]
-    ,subjectList //get all subjects // () -> [clientSubject]
-    ,questionList //get questions of subject // (subjectID) -> [clientQuestion]
-    ,examList //get exams of subject // (subjectID) -> clientExam
-    ,questionByTeacher //get questions of teacher // (teacherID) -> [clientQuestion]
-    ,examByTeacher //get exams of teacher // (teacherID) -> [clientExam]
-    ,getExam //get exam by id // (examID) -> clientExam
-    ,courseExam // get exam by course id // (courseID) -> clientExam
-    ,selectExamForCourse // (courseID) -> void
-    ,startExam // set access code duration online // (courseID,AccessCode,duration,online) -> void
-    ,createExam // create exam from question // ([clientQuestion],subjectID,teacherID) -> void
-    ,createQuestion // create question for subject //(clientQuestion,subjectID,teacherID)  -> void
-    ,studentsFromCourse // get students list in course // courseID -> [clientUser]
-    ,coursesFromSubjectAndTeacher // courses list by subject and teacher // (subjectID, teacherID) -> [clientCourse]
-    ,newRequest // new request for principle to add time // (addedTime, exp) -> void
-    ,confirmGrade // confirm student grade //(studentID, courseID) -> void
-    ,changeAndConfirmGrade // change and confirm student grade // (studentID, courseID, newGrade, reason) -> void
-    ,getGrade // get grade from student in course //(studentID, courseID) -> clientGrade
-    ,getGradesOfCourse // get all grades in course // (courseID) -> [clientGrade]
-    ,takeExam // take exam for student // (AccessCode, studentID)-> clientExam
-    ,submitOnlineExam // save student answers for exam //(arr, courseID, studentID) -> void
-    ,requestList // get all requests // () -> [clientRequest]
-    ,decideRequest // decide if yes or no // (requestID, accept) -> void
+    // login user
+    // (userID, password) -> clientUser
+    logIn
 
+    //get list of all teachers
+    //PRINCIPLE : () -> [clientUser]
+    ,teacherList
 
+    //get all students
+    //PRINCIPLE : () -> [clientUser]
+    ,studentList
+
+    //get grades of student
+    //STUDENT : () -> [clientGrade]
+    //OTHER : (studentID) -> [clientGrade]
+    ,gradesList
+
+    //get all subjects
+    //ALL : () -> [clientSubject]
+    ,subjectList
+
+    //get questions of subject
+    //TEACHER/PRINCIPLE : (subjectID) -> [clientQuestion]
+    ,questionList
+
+    //get exams of subject
+    //TEACHER/PRINCIPLE : (subjectID) -> clientExam
+    ,examList
+
+    //get questions of teacher
+    //TEACHER/PRINCIPLE : (teacherID) -> [clientQuestion]
+    ,questionByTeacher
+
+    //get exams of teacher
+    //TEACHER/PRINCIPLE : (teacherID) -> [clientExam]
+    ,examByTeacher
+
+    //get exam by id
+    //TEACHER/PRINCIPLE : (examID) -> clientExam
+    ,getExam
+
+    // get exam by course id
+    //TEACHER/PRINCIPLE : (courseID) -> clientExam
+    ,courseExam
+
+    //Select exam from course
+    //TEACHER : (courseID) -> void
+    ,selectExamForCourse
+
+    // set access code duration online
+    //TECAHER : (courseID,AccessCode,duration,online) -> void
+    ,startExam
+
+    // create exam from question
+    //TEACHER : ([clientQuestion],subjectID) -> void
+    ,createExam
+
+    // create question for subject
+    //TEACHER : (clientQuestion,subjectID)  -> void
+    ,createQuestion
+
+    // get students list in course
+    // TEACHER/PRINCIPLE : courseID -> [clientUser]
+    ,studentsFromCourse
+
+    // courses list by subject and teacher
+    // TEACHER/PRINCIPLE : (subjectID, teacherID) -> [clientCourse]
+    ,coursesFromSubjectAndTeacher
+
+    // new request for principle to add time
+    // TEACHER : (addedTime, exp) -> void
+    ,newRequest
+
+    // confirm student grade
+    // TEACHER : (studentID, courseID) -> void
+    ,confirmGrade
+
+    // change and confirm student grade
+    // TEACHER : (studentID, courseID, newGrade, reason) -> void
+    ,changeAndConfirmGrade
+
+    // get grade from student in course
+    // STUDENT : (courseID) -> clientGrade
+    // TEACHER/PRINCIPLE : (studentID, courseID) -> clientGrade
+    ,getGrade
+
+    // get all grades in course
+    // TEACHER/PRINCIPLE : (courseID) -> [clientGrade]
+    ,getGradesOfCourse
+
+    // take exam for student
+    // STUDENT : (AccessCode)-> clientExam
+    ,takeExam
+
+    // save student answers for exam
+    // STUDENT : (arr, courseID) -> void
+    ,submitOnlineExam
+
+    // get all requests
+    // PRINCIPLE : () -> [clientRequest]
+    ,requestList
+
+    // decide if yes or no
+    // PRINCIPLE : (requestID, accept) -> void
+    ,decideRequest
+
+    //get exam for manual
+    //STUDENT : (AccessCode) -> clientExam
+    ,getManualExam
+
+    //submit manual exam
+    //STUDENT : (file, courseID) -> coid
+    ,submitManualExam
+
+    //download exam of student (manual)
+    //STUDENT : (courseID) -> clientExam
+    //TEACHER/PRINCIPLE : (courseID, studentID) -> clientExam
+    ,downloadManualExam
 }

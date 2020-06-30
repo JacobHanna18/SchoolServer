@@ -1,15 +1,22 @@
 package server.ServerClient;
 import com.google.gson.Gson;
+import org.apache.poi.xwpf.usermodel.*;
 import server.App;
 import server.Commands;
 import server.Server.AbstractServer ;
 import server.Server.ConnectionToClient ;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import server.clientClasses.*;
 
 import server.clientClasses.*;
+
+
+import server.entities.Grade;
+import server.entities.Question;
 
 
 public class SimpleChatServer extends AbstractServer {
@@ -45,76 +52,139 @@ public class SimpleChatServer extends AbstractServer {
 					}
 					break;
 				case gradesList:
-					client.sendToClient(cmd.getGradesOfStudent(ca.studentID,0));
+				    if(client.user.role == 1){
+                        client.sendToClient(cmd.getGradesOfStudent(client.user.id,1));
+                    }else{
+                        client.sendToClient(cmd.getGradesOfStudent(ca.studentID,0));
+                    }
 					break;
                 case subjectList:
                     client.sendToClient(cmd.allSubjects());
                     break;
                 case examList:
-                    client.sendToClient(cmd.subjectExamList(ca.subjectID));
+                    if(client.user.role > 1){
+                        client.sendToClient(cmd.subjectExamList(ca.subjectID));
+                    }
                     break;
                 case questionList:
-                    client.sendToClient(cmd.subjectQuestionList(ca.subjectID));
+                    if(client.user.role > 1){
+                        client.sendToClient(cmd.subjectQuestionList(ca.subjectID));
+                    }
                     break;
                 case questionByTeacher:
-                    client.sendToClient(cmd.questionsOfTeacher(ca.teacherID));
+                    if(client.user.role > 1) {
+                        client.sendToClient(cmd.questionsOfTeacher(ca.teacherID));
+                    }
                     break;
                 case examByTeacher:
-                	System.out.println(cmd.examsFromTeacher(ca.teacherID));
-                    client.sendToClient(cmd.examsFromTeacher(ca.teacherID));
+                    if(client.user.role > 1) {
+                        client.sendToClient(cmd.examsFromTeacher(ca.teacherID));
+                    }
                     break;
 				case getExam:
-					client.sendToClient(cmd.getExam(ca.examID));
+                    if(client.user.role > 1) {
+                        client.sendToClient(cmd.getExam(ca.examID));
+                    }
 					break;
 				case courseExam:
-					client.sendToClient(cmd.examFromCourse(ca.courseID));
+                    if(client.user.role > 1) {
+                        client.sendToClient(cmd.examFromCourse(ca.courseID));
+                    }
 					break;
 				case selectExamForCourse:
-					cmd.selectExam(ca.examID,ca.courseID);
+                    if(client.user.role == 2) {
+                        cmd.selectExam(ca.examID, ca.courseID);
+                    }
 					break;
 				case startExam:
-					client.sendToClient(cmd.startExam(ca.courseID,ca.AccessCode,ca.duration,ca.online));
+                    if(client.user.role == 2) {
+                        client.sendToClient(cmd.startExam(ca.courseID, ca.AccessCode, ca.duration, ca.online));
+                    }
 					break;
 				case createExam:
-					cmd.createExam(ca.e,ca.subjectID,ca.teacherID);
+				    if(client.user.role == 2){
+                        cmd.createExam(ca.e,ca.subjectID,client.user.id);
+                    }
 					break;
 				case createQuestion:
-					cmd.createQuestion(ca.q,ca.subjectID,ca.teacherID);
+                    if(client.user.role == 2){
+                        cmd.createQuestion(ca.q,ca.subjectID,client.user.id);
+                    }
 					break;
 				case studentsFromCourse:
-					client.sendToClient(cmd.courseStudents(ca.courseID));
+                    if(client.user.role > 1) {
+                        client.sendToClient(cmd.courseStudents(ca.courseID));
+                    }
 					break;
 				case coursesFromSubjectAndTeacher:
-					client.sendToClient(cmd.coursesOfSubjectTeacher(ca.subjectID,ca.teacherID));
+                    if(client.user.role > 1) {
+                        client.sendToClient(cmd.coursesOfSubjectTeacher(ca.subjectID, ca.teacherID));
+                    }
 					break;
 				case newRequest:
-					cmd.newRequest(ca.courseID,ca.addedTime,ca.exp);
+                    if(client.user.role == 2) {
+                        cmd.newRequest(ca.courseID, ca.addedTime, ca.exp);
+                    }
 					break;
 				case confirmGrade:
-					cmd.confirmGrade(ca.studentID,ca.courseID);
+                    if(client.user.role == 2) {
+                        cmd.confirmGrade(ca.studentID, ca.courseID);
+                    }
 					break;
 				case changeAndConfirmGrade:
-					cmd.changeAndConfirmGrade(ca.studentID,ca.courseID,ca.newGrade,ca.reason);
+                    if(client.user.role == 2) {
+                        cmd.changeAndConfirmGrade(ca.studentID, ca.courseID, ca.newGrade, ca.reason);
+                    }
 					break;
 				case getGrade:
-					client.sendToClient(cmd.getGrade(ca.studentID,ca.courseID));
+				    if(client.user.role == 1){
+                        client.sendToClient(cmd.getGrade(client.user.id,ca.courseID));
+                    }else{
+                        client.sendToClient(cmd.getGrade(ca.studentID,ca.courseID));
+                    }
 					break;
 				case getGradesOfCourse:
-					client.sendToClient(cmd.getGradesOfCourse(ca.courseID));
+                    if(client.user.role > 1) {
+                        client.sendToClient(cmd.getGradesOfCourse(ca.courseID));
+                    }
 					break;
 				case takeExam:
-					client.sendToClient(cmd.takeExam(ca.AccessCode,ca.studentID));
+                    if (client.user.role == 1) {
+                        client.sendToClient(cmd.takeExam(ca.AccessCode,client.user.id));
+                    }
 					break;
 				case submitOnlineExam:
-					cmd.submitOnlineExam(ca.arr,ca.courseID,ca.studentID);
+				    if(client.user.role == 1){
+                        cmd.submitOnlineExam(ca.arr,ca.courseID,client.user.id);
+                    }
 					break;
 				case requestList:
-					client.sendToClient(cmd.allRequests(0));
+                    if(client.user.role == 3) {
+                        client.sendToClient(cmd.allRequests(0));
+                    }
 					break;
 				case decideRequest:
-					cmd.decideRequest(ca.requestID,ca.accept);
+                    if(client.user.role == 3) {
+                        cmd.decideRequest(ca.requestID, ca.accept);
+                    }
 					break;
-
+				case getManualExam:
+					if(client.user.role == 1){
+						client.sendToClient(cmd.getManualExam(client.user.id,ca.AccessCode));
+					}
+					break;
+				case submitManualExam:
+					if(client.user.role == 1){
+						cmd.submitManualExam(ca.file,ca.courseID,client.user.id);
+					}
+					break;
+				case downloadManualExam:
+					if(client.user.role == 1){
+						client.sendToClient(cmd.downloadStudentExam(client.user.id,ca.courseID));
+					}else{
+						client.sendToClient(cmd.downloadStudentExam(ca.studentID,ca.courseID));
+					}
+					break;
 
 
 			}
@@ -136,8 +206,30 @@ public class SimpleChatServer extends AbstractServer {
 		System.out.println("Client connected: " + client.getInetAddress());
 	}
 
+	static public void toFile (byte[] bytes, String FilePath) throws IOException {
+		OutputStream os = new FileOutputStream(FilePath);
+		os.write(bytes);
+		os.close();
+	}
+
+	static public byte[] toBytes (String FilePath) throws IOException {
+		FileInputStream fis = null;
+		File file = new File(FilePath);
+		byte[] bArray = new byte[(int) file.length()];
+		fis = new FileInputStream(file);
+		fis.read(bArray);
+		fis.close();
+		return bArray;
+	}
+
 	public static void main(String[] args) throws IOException {
+
 		App.SetUp();
+
+		clientGrade g = gson.fromJson(cmd.downloadStudentExam("2",2),clientGrade.class);
+		System.out.println(g.file);
+		toFile(g.file,"C:\\Users\\jacob\\Documents\\downloaded.docx");
+
 		if (args.length != 1) {
 			SimpleChatServer server = new SimpleChatServer(Integer.parseInt("1000"));
 			server.listen();
@@ -147,4 +239,5 @@ public class SimpleChatServer extends AbstractServer {
 			server.listen();
 		}
 	}
+
 }

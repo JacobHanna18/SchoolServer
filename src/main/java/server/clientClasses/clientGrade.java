@@ -8,5 +8,6 @@ public class clientGrade {
     public clientCourse course;
     public String courseName;
     public int online;
+    public byte[] file;
     public ArrayList<clientAnswer> answers = new ArrayList<>();
 }

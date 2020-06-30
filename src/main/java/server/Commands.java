@@ -1,6 +1,10 @@
 package server;
 
 import com.google.gson.Gson;
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.hibernate.Session;
 import org.hibernate.jpa.boot.spi.EntityManagerFactoryBuilder;
 import org.hibernate.query.Query;
@@ -12,8 +16,11 @@ import org.json.simple.JSONObject;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Commands {
@@ -350,23 +357,30 @@ public class Commands {
         return gson.toJson(cgs);
     }
 
-    public String takeExam (int AccessCode, String studentID){
+    public clientExam getExamFrom (int AccessCode){
         String hql = "FROM Course c WHERE c.AccessCode = " + AccessCode;
         Course c = getFirst(hql, Course.class);
 
-        String hql2 = "SELECT g.student FROM Grade g WHERE g.course = " + c.getId() + " AND g.student = " + studentID;
-        List<Student> l2 = listFrom(hql2,Student.class);
-        if(l2.size() == 0) {
-            Student s = session.get(Student.class, studentID);
-            Grade g = new Grade();
-            g.setStudent(s);
-            g.setCourse(c);
-            session.save(g);
-            session.getTransaction().commit();
-        }
-
         clientExam ce = new clientExam();
 
+        ce.online = c.getOnline();
+        ce.subjectName = c.getName();
+
+        ce.courseID = c.getId();
+        Exam e = c.getExam();
+        for (Question q : e.getQuestions()){
+            ce.questions.add(new clientQuestion(q.getId(), q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3(),q.getTeacher().getName()));
+        }
+
+        return ce;
+    }
+
+    public String takeExam (int AccessCode, String studentID){
+
+        Grade g = addStudentToCourse(studentID,AccessCode);
+        Course c = g.getCourse();
+
+        clientExam ce = new clientExam();
 
         int currentTime = ((int) (System.currentTimeMillis() / 1000));
 
@@ -376,6 +390,7 @@ public class Commands {
         }
 
         ce.online = c.getOnline();
+        ce.courseID = c.getId();
         Exam e = c.getExam();
         for (Question q : e.getQuestions()){
             ce.questions.add(new clientQuestion(q.getId(), q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3(),q.getTeacher().getName()));
@@ -383,22 +398,33 @@ public class Commands {
         return gson.toJson(ce);
     }
 
+    public Grade addStudentToCourse (String studentID, int AccessCode){
+        String hql = "FROM Course c WHERE c.AccessCode = " + AccessCode;
+        Course c = getFirst(hql, Course.class);
+
+        String hql2 = "SELECT g FROM Grade g WHERE g.course = " + c.getId() + " AND g.student = " + studentID;
+        List<Grade> l2 = listFrom(hql2,Grade.class);
+        if(l2.size() == 0) {
+            Student s = session.get(Student.class, studentID);
+            Grade g = new Grade();
+            g.setStudent(s);
+            g.setCourse(c);
+            session.save(g);
+            session.getTransaction().commit();
+            return g;
+        }
+        return l2.get(0);
+    }
+
     public void submitOnlineExam (ArrayList<clientAnswer> arr, int courseID, String studentID){
 
         int rightAnswers = 0;
         EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
-        Course c = em.getReference(Course.class, courseID);
+        Course c = session.get(Course.class, courseID);
         Student s = em.getReference(Student.class, studentID);
 
-        String hql2 = "SELECT g.student FROM Grade g WHERE g.course = " + courseID + " AND g.student = " + studentID;
-        List<Student> l2 = listFrom(hql2,Student.class);
-        if(l2.size() == 0) {
-            Grade g = new Grade();
-            g.setStudent(s);
-            g.setCourse(c);
-            em.persist(g);
-        }
+        Grade g = addStudentToCourse(studentID,c.getAccessCode());
 
         for (clientAnswer ca : arr){
             rightAnswers += (ca.answer == 0 ? 1 : 0);
@@ -411,10 +437,12 @@ public class Commands {
             em.persist(newA);
         }
 
-
-
         em.getTransaction().commit();
         em.close();
+
+        g.setGrade(rightAnswers / g.getCourse().getExam().getQuestions().size());
+        session.persist(g);
+        session.getTransaction().commit();
     }
 
     public String allTeachers (){
@@ -525,6 +553,83 @@ public class Commands {
         }
         return gson.toJson(cs);
     }
+
+    public void submitManualExam (byte[] file, int courseID, String studentID){
+        Course c = session.get(Course.class,courseID);
+        Grade g = addStudentToCourse(studentID,c.getAccessCode());
+        g.setExamFile(file);
+        session.persist(g);
+        session.getTransaction().commit();
+    }
+
+    public String downloadStudentExam(String studentID, int courseID){
+        String hql = "SELECT g FROM Grade g WHERE g.student = " + studentID + " AND g.course = " + courseID;
+        Grade g = getFirst(hql, Grade.class);
+        clientGrade cg = new clientGrade();
+        cg.courseName = g.getCourse().getName();
+        cg.file = g.getExamFile();
+        cg.grade = g.getGrade();
+        return gson.toJson(cg);
+    }
+
+    public String getManualExam(String studentID, int AccessCode) throws IOException {
+        Grade g = addStudentToCourse(studentID,AccessCode);
+
+        clientExam ce = getExamFrom(AccessCode);
+        ce.courseID = g.getCourse().getId();
+
+        XWPFDocument document = new XWPFDocument();
+
+        XWPFParagraph p1 = document.createParagraph();
+        p1.setAlignment(ParagraphAlignment.CENTER);
+        XWPFRun r1 = p1.createRun();
+        r1.setBold(true);
+        r1.setFontSize(24);
+        r1.setText(ce.subjectName);
+
+        int x = 1;
+        for(clientQuestion q : ce.questions){
+
+            XWPFParagraph paragraph = document.createParagraph();
+
+            ArrayList<String> arr = new ArrayList<>();
+            arr.add(q.right);
+            arr.add(q.wrong1);
+            arr.add(q.wrong2);
+            arr.add(q.wrong3);
+            Collections.shuffle(arr);
+
+            XWPFRun questionRun = paragraph.createRun();
+            questionRun.setBold(true);
+            questionRun.setText(x + ". " + q.question);
+            x++;
+            questionRun.addBreak();
+            XWPFRun answersRun = paragraph.createRun();
+
+            int y = 1;
+            for (String s : arr){
+                answersRun.addTab();
+                answersRun.setText(y + ". " + s);
+                y++;
+                answersRun.addBreak();
+            }
+
+        }
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        document.write(out);
+        out.close();
+        document.close();
+
+        clientExam manual = new clientExam();
+        manual.file = out.toByteArray();
+        manual.courseID = g.getCourse().getId();
+        manual.online = 0;
+
+        return gson.toJson(manual);
+    }
+
 
     <T> T getFirst (String hql, Class<T> obj){
         Query<T> query = session.createQuery(hql, obj);

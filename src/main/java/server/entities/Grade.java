@@ -1,6 +1,12 @@
 package server.entities;
 
+import com.mysql.cj.exceptions.ExceptionInterceptor;
+import com.mysql.cj.log.Log;
+import org.hibernate.type.BlobType;
+
 import javax.persistence.*;
+import java.sql.Blob;
+import java.util.Properties;
 
 @Entity
 @Table(name = "grades")
@@ -23,6 +29,18 @@ public class Grade {
     }
 
     int confirmed;
+
+    public byte[] getExamFile() {
+        return examFile;
+    }
+
+    public void setExamFile(byte[] examFile) {
+        this.examFile = examFile;
+    }
+
+    @Lob
+    @Column(name = "examFile", columnDefinition="BLOB")
+    private byte[] examFile;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Student_id")

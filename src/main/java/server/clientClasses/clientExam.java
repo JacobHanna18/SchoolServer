@@ -6,9 +6,12 @@ public class clientExam {
     public ArrayList<clientQuestion> questions = new ArrayList<>();
     public String teacher;
     public int id;
+    public int courseID;
     public ArrayList<Integer> questionIds = new ArrayList<Integer>();
 
     public String subjectName;
+
+    public byte[] file;
 
     public int online;
 
