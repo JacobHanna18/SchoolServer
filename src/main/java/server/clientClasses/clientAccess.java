@@ -1,5 +1,6 @@
 package server.clientClasses;
 
+import java.io.*;
 import java.util.ArrayList;
 
 public class clientAccess {
@@ -19,6 +20,8 @@ public class clientAccess {
 
     public byte[] file;
 
+    public String note;
+
     public clientExam e;
     public clientQuestion q;
     public ArrayList<clientAnswer> arr;
@@ -37,4 +40,20 @@ public class clientAccess {
     public String reason;
 
     public boolean accept;
+
+    static public void toFile (byte[] bytes, String FilePath) throws IOException {
+        OutputStream os = new FileOutputStream(FilePath);
+        os.write(bytes);
+        os.close();
+    }
+
+    static public byte[] toBytes (String FilePath) throws IOException {
+        FileInputStream fis = null;
+        File file = new File(FilePath);
+        byte[] bArray = new byte[(int) file.length()];
+        fis = new FileInputStream(file);
+        fis.read(bArray);
+        fis.close();
+        return bArray;
+    }
 }

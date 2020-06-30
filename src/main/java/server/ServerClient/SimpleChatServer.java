@@ -43,8 +43,8 @@ public class SimpleChatServer extends AbstractServer {
 						if(client.user.role == 0){
 							client.tries--;
 						}
-						client.sendToClient(gson.toJson(client.user));
 					}
+					client.sendToClient(gson.toJson(client.user));
 					break;
 				case teacherList:
 					if(client.user.role == 3){
@@ -173,11 +173,6 @@ public class SimpleChatServer extends AbstractServer {
                         cmd.decideRequest(ca.requestID, ca.accept);
                     }
 					break;
-				case getManualExam:
-					if(client.user.role == 1){
-						client.sendToClient(cmd.getManualExam(client.user.id,ca.AccessCode));
-					}
-					break;
 				case submitManualExam:
 					if(client.user.role == 1){
 						cmd.submitManualExam(ca.file,ca.courseID,client.user.id);
@@ -211,21 +206,6 @@ public class SimpleChatServer extends AbstractServer {
 		System.out.println("Client connected: " + client.getInetAddress());
 	}
 
-	static public void toFile (byte[] bytes, String FilePath) throws IOException {
-		OutputStream os = new FileOutputStream(FilePath);
-		os.write(bytes);
-		os.close();
-	}
-
-	static public byte[] toBytes (String FilePath) throws IOException {
-		FileInputStream fis = null;
-		File file = new File(FilePath);
-		byte[] bArray = new byte[(int) file.length()];
-		fis = new FileInputStream(file);
-		fis.read(bArray);
-		fis.close();
-		return bArray;
-	}
 
 	public static void main(String[] args) throws IOException {
 

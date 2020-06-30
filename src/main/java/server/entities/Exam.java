@@ -20,6 +20,14 @@ public class Exam {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "exam")
     List<Course> courses = new ArrayList<Course>();
 
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
     String note;
 
     public Exam(Subject subject) {

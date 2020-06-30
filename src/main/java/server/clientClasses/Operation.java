@@ -107,10 +107,6 @@ public enum Operation {
     // PRINCIPLE : (requestID, accept) -> void
     ,decideRequest
 
-    //get exam for manual
-    //STUDENT : (AccessCode) -> clientExam
-    ,getManualExam
-
     //submit manual exam
     //STUDENT : (file, courseID) -> coid
     ,submitManualExam

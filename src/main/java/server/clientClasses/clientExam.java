@@ -10,15 +10,17 @@ public class clientExam {
     public ArrayList<Integer> questionIds = new ArrayList<Integer>();
 
     public String subjectName;
+    public String note;
 
     public byte[] file;
 
     public int online;
 
-    public clientExam(int id, String teacher, String subjectName) {
+    public clientExam(int id, String teacher, String subjectName, String note) {
         this.id = id;
         this.teacher = teacher;
         this.subjectName = subjectName;
+        this.note = note;
     }
 
     public clientExam() {

@@ -69,7 +69,7 @@ public class Commands {
     public String getExam (int examID){
         Exam e = session.get(Exam.class, examID);
 
-        clientExam exam = new clientExam(e.getId(), e.getTeacher().getName(),e.getSubject().getName());
+        clientExam exam = new clientExam(e.getId(), e.getTeacher().getName(),e.getSubject().getName(),e.getNote());
         for (Question q : e.getQuestions()){
             exam.questions.add(new clientQuestion(q.getId(), q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3(),q.getTeacher().getName()));
         }
@@ -133,7 +133,7 @@ public class Commands {
         List<Exam> l = listFrom(hql,Exam.class);
         ArrayList<clientExam> arr = new ArrayList<>();
         for (Exam e : l){
-            arr.add(new clientExam(e.getId(),e.getTeacher().getName(),e.getSubject().getName()));
+            arr.add(new clientExam(e.getId(),e.getTeacher().getName(),e.getSubject().getName(),e.getNote()));
         }
         return gson.toJson(arr);
     }
@@ -147,6 +147,7 @@ public class Commands {
         Teacher t = em.getReference(Teacher.class,teacherID);
         newExam.setSubject(s);
         newExam.setTeacher(t);
+        newExam.setNote(e.note);
         for(int id : e.questionIds){
             Question q = em.getReference(Question.class,id);
             newExam.addQuestion(q);
@@ -235,7 +236,7 @@ public class Commands {
         List<Exam> l = listFrom(hql,Exam.class);
         ArrayList<clientExam> arr = new ArrayList<>();
         for (Exam e : l){
-            clientExam ce = new clientExam(e.getId(),(e.getTeacher().getName()),e.getSubject().getName());
+            clientExam ce = new clientExam(e.getId(),(e.getTeacher().getName()),e.getSubject().getName(),e.getNote());
             for(Question q : e.getQuestions()){
                 ce.questionIds.add(q.getId());
             }
@@ -365,7 +366,7 @@ public class Commands {
 
         ce.online = c.getOnline();
         ce.subjectName = c.getName();
-
+        ce.note = c.getExam().getNote();
         ce.courseID = c.getId();
         Exam e = c.getExam();
         for (Question q : e.getQuestions()){
@@ -379,6 +380,10 @@ public class Commands {
 
         Grade g = addStudentToCourse(studentID,AccessCode);
         Course c = g.getCourse();
+
+        if(c.getOnline() == -1){
+            return this.getManualExam(studentID,AccessCode);
+        }
 
         clientExam ce = new clientExam();
 
@@ -572,7 +577,7 @@ public class Commands {
         return gson.toJson(cg);
     }
 
-    public String getManualExam(String studentID, int AccessCode) throws IOException {
+    public String getManualExam(String studentID, int AccessCode) {
         Grade g = addStudentToCourse(studentID,AccessCode);
 
         clientExam ce = getExamFrom(AccessCode);
@@ -618,14 +623,19 @@ public class Commands {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        document.write(out);
-        out.close();
-        document.close();
+        try {
+            document.write(out);
+            out.close();
+            document.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         clientExam manual = new clientExam();
         manual.file = out.toByteArray();
         manual.courseID = g.getCourse().getId();
-        manual.online = 0;
+        manual.online = -1;
 
         return gson.toJson(manual);
     }
