@@ -1,8 +1,8 @@
 package server.clientClasses;
 
 public class clientRequest {
-    public clientCourse course;
-    public clientUser teacher;
+    public String course;
+    public String teacher;
     public int timeAdded;
     public String explanation;
     public int id;

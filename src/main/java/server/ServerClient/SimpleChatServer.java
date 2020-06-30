@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import server.clientClasses.*;
 
+
 import server.clientClasses.*;
 
 
@@ -165,7 +166,7 @@ public class SimpleChatServer extends AbstractServer {
 					break;
 				case requestList:
                     if(client.user.role == 3) {
-                        client.sendToClient(cmd.allRequests(0));
+                        client.sendToClient(cmd.allRequests(1));
                     }
 					break;
 				case decideRequest:

@@ -381,7 +381,7 @@ public class Commands {
         Grade g = addStudentToCourse(studentID,AccessCode);
         Course c = g.getCourse();
 
-        if(c.getOnline() == -1){
+        if(c.getOnline() == 0){
             return this.getManualExam(studentID,AccessCode);
         }
 
@@ -497,10 +497,9 @@ public class Commands {
 
         for( Request r: arr){
             clientRequest cr = new clientRequest(r.getTimeAdded(),r.getExplaination(),r.getId());
-            Course c = r.getCourse();
-            cr.course = new clientCourse(c.getName(),c.getId(),c.getOnline());
-            Teacher t = c.getTeacher();
-            cr.teacher = new clientUser(t.getName(),t.getId(),2);
+            cr.course = r.getCourse().getName();
+            cr.teacher = r.getCourse().getTeacher().getName();
+            cr.timeAdded = r.getTimeAdded();
 
             ss.add(cr);
         }
@@ -563,7 +562,7 @@ public class Commands {
         Course c = session.get(Course.class,courseID);
         Grade g = addStudentToCourse(studentID,c.getAccessCode());
         g.setExamFile(file);
-        session.persist(g);
+        session.update(g);
         session.getTransaction().commit();
     }
 
