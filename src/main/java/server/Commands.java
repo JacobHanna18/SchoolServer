@@ -142,6 +142,16 @@ public class Commands {
         return gson.toJson(arr);
     }
 
+    public String subjectTeacherExamList (int subjectID, String teacherID){
+        String hql = "FROM Exam e WHERE e.subject = " + subjectID + " AND e.teacher = " + teacherID;
+        List<Exam> l = listFrom(hql,Exam.class);
+        ArrayList<clientExam> arr = new ArrayList<>();
+        for (Exam e : l){
+            arr.add(new clientExam(e.getId(),e.getTeacher().getName(),e.getSubject().getName(),e.getNote(),e.getTeacherNote()));
+        }
+        return gson.toJson(arr);
+    }
+
     public void createExam (clientExam e, int subjectID, String teacherID){
         EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();

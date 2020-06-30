@@ -34,7 +34,7 @@ public enum Operation {
     //TEACHER/PRINCIPLE : (teacherID) -> [clientQuestion]
     ,questionByTeacher
 
-    //get exams of teacher
+    //`get exams of teacher`
     //TEACHER/PRINCIPLE : (teacherID) -> [clientExam]
     ,examByTeacher
 
@@ -115,4 +115,9 @@ public enum Operation {
     //STUDENT : (courseID) -> clientExam
     //TEACHER/PRINCIPLE : (courseID, studentID) -> clientExam
     ,downloadManualExam
+
+    //get teacher exams of course
+    //TEACHER : () -> [clientExam]
+    //PRINCIPLE : (teacherID) -> [clientExam]
+    ,subjectTeacherExamList
 }

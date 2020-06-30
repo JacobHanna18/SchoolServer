@@ -189,6 +189,12 @@ public class SimpleChatServer extends AbstractServer {
 						client.sendToClient(cmd.downloadStudentExam(ca.studentID,ca.courseID));
 					}
 					break;
+				case subjectTeacherExamList:
+					if(client.user.role == 2) {
+						client.sendToClient(cmd.subjectTeacherExamList(ca.subjectID, client.user.id));
+					}else if (client.user.role == 3){
+						client.sendToClient(cmd.subjectTeacherExamList(ca.subjectID, ca.teacherID));
+					}
 
 
 			}

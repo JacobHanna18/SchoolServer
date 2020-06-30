@@ -1,5 +1,6 @@
 package server.clientClasses;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.io.*;
 import java.util.ArrayList;
 
@@ -20,7 +21,7 @@ public class clientAccess {
 
     public byte[] file;
 
-    public String note;
+     public String note;
     public String teacherNote;
 
     public clientExam e;
