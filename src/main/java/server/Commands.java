@@ -635,7 +635,7 @@ public class Commands {
         clientExam manual = new clientExam();
         manual.file = out.toByteArray();
         manual.courseID = g.getCourse().getId();
-        manual.online = -1;
+        manual.online = 0;
 
         return gson.toJson(manual);
     }
