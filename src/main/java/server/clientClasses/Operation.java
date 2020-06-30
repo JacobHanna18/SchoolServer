@@ -108,7 +108,7 @@ public enum Operation {
     ,decideRequest
 
     //submit manual exam
-    //STUDENT : (file, courseID) -> coid
+    //STUDENT : (file, courseID) -> void
     ,submitManualExam
 
     //download exam of student (manual)
