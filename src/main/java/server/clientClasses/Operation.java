@@ -120,4 +120,8 @@ public enum Operation {
     //TEACHER : () -> [clientExam]
     //PRINCIPLE : (teacherID) -> [clientExam]
     ,subjectTeacherExamList
+
+    // courses list by subject
+    // TEACHER/PRINCIPLE : (subjectID) -> [clientCourse]
+    ,coursesOfSubject
 }

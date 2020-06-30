@@ -271,6 +271,15 @@ public class Commands {
         }
         return gson.toJson(arr);
     }
+    public String coursesOfSubject(int subjectId){
+        String hql = "FROM Course c WHERE c.subject = " + subjectId ;
+        List<Course> l = listFrom(hql,Course.class);
+        ArrayList<clientCourse> arr = new ArrayList<>();
+        for (Course c : l){
+            arr.add(new clientCourse(c.getName(),c.getId(),c.getOnline()));
+        }
+        return gson.toJson(arr);
+    }
 
     public void newRequest (int courseID, int addedTime, String exp){
         EntityManager em = session.getEntityManagerFactory().createEntityManager();
