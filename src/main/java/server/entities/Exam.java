@@ -29,6 +29,15 @@ public class Exam {
     }
 
     String note;
+
+    public String getTeacherNote() {
+        return teacherNote;
+    }
+
+    public void setTeacherNote(String teacherNote) {
+        this.teacherNote = teacherNote;
+    }
+
     String teacherNote;
 
     public Exam(Subject subject) {

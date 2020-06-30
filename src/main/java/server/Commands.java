@@ -71,7 +71,7 @@ public class Commands {
     public String getExam (int examID){
         Exam e = session.get(Exam.class, examID);
 
-        clientExam exam = new clientExam(e.getId(), e.getTeacher().getName(),e.getSubject().getName(),e.getNote());
+        clientExam exam = new clientExam(e.getId(), e.getTeacher().getName(),e.getSubject().getName(),e.getNote(),e.getTeacherNote());
         for (Question q : e.getQuestions()){
             exam.questions.add(new clientQuestion(q.getId(), q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3(),q.getTeacher().getName()));
         }
@@ -137,7 +137,7 @@ public class Commands {
         List<Exam> l = listFrom(hql,Exam.class);
         ArrayList<clientExam> arr = new ArrayList<>();
         for (Exam e : l){
-            arr.add(new clientExam(e.getId(),e.getTeacher().getName(),e.getSubject().getName(),e.getNote()));
+            arr.add(new clientExam(e.getId(),e.getTeacher().getName(),e.getSubject().getName(),e.getNote(),e.getTeacherNote()));
         }
         return gson.toJson(arr);
     }
@@ -152,6 +152,7 @@ public class Commands {
         newExam.setSubject(s);
         newExam.setTeacher(t);
         newExam.setNote(e.note);
+        newExam.setTeacherNote(e.teacherNote);
         for(int id : e.questionIds){
             Question q = em.getReference(Question.class,id);
             newExam.addQuestion(q);
@@ -242,7 +243,7 @@ public class Commands {
         List<Exam> l = listFrom(hql,Exam.class);
         ArrayList<clientExam> arr = new ArrayList<>();
         for (Exam e : l){
-            clientExam ce = new clientExam(e.getId(),(e.getTeacher().getName()),e.getSubject().getName(),e.getNote());
+            clientExam ce = new clientExam(e.getId(),(e.getTeacher().getName()),e.getSubject().getName(),e.getNote(),e.getTeacherNote());
             for(Question q : e.getQuestions()){
                 ce.questionIds.add(q.getId());
             }
@@ -378,6 +379,7 @@ public class Commands {
         ce.subjectName = c.getName();
         ce.note = c.getExam().getNote();
         ce.courseID = c.getId();
+        ce.teacherNote = c.getExam().getTeacherNote();
         Exam e = c.getExam();
         for (Question q : e.getQuestions()){
             ce.questions.add(new clientQuestion(q.getId(), q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3(),q.getTeacher().getName()));
@@ -391,10 +393,6 @@ public class Commands {
         Grade g = addStudentToCourse(studentID,AccessCode);
         Course c = g.getCourse();
 
-        if(c.getOnline() == 0){
-            return this.getManualExam(studentID,AccessCode);
-        }
-
         clientExam ce = new clientExam();
 
         int currentTime = ((int) (System.currentTimeMillis() / 1000));
@@ -404,9 +402,16 @@ public class Commands {
             return gson.toJson(ce);
         }
 
+        if(c.getOnline() == 0){
+            return this.getManualExam(studentID,AccessCode);
+        }
+
         ce.online = c.getOnline();
         ce.courseID = c.getId();
+
         Exam e = c.getExam();
+        ce.teacherNote = e.getTeacherNote();
+        ce.note = e.getNote();
         for (Question q : e.getQuestions()){
             ce.questions.add(new clientQuestion(q.getId(), q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3(),q.getTeacher().getName()));
         }
@@ -443,7 +448,7 @@ public class Commands {
         Grade g = addStudentToCourse(studentID,c.getAccessCode());
 
         for (clientAnswer ca : arr){
-            rightAnswers += (ca.answer == 0 ? 1 : 0);
+            rightAnswers += (ca.answer == 1 ? 1 : 0);
             Answer newA = new Answer();
             newA.setAnswer(ca.answer);
             Question q = em.getReference(Question.class,ca.questionId);
@@ -457,7 +462,7 @@ public class Commands {
         em.getTransaction().commit();
         em.close();
 
-        g.setGrade(rightAnswers / g.getCourse().getExam().getQuestions().size());
+        g.setGrade(100 * (double)rightAnswers / (double)g.getCourse().getExam().getQuestions().size());
         session.persist(g);
         session.flush();
         session.getTransaction().commit();
@@ -594,8 +599,7 @@ public class Commands {
     public String getManualExam(String studentID, int AccessCode) {
         Grade g = addStudentToCourse(studentID,AccessCode);
 
-        clientExam ce = getExamFrom(AccessCode);
-        ce.courseID = g.getCourse().getId();
+        Exam e = g.getCourse().getExam();
 
         XWPFDocument document = new XWPFDocument();
 
@@ -604,23 +608,23 @@ public class Commands {
         XWPFRun r1 = p1.createRun();
         r1.setBold(true);
         r1.setFontSize(24);
-        r1.setText(ce.subjectName);
+        r1.setText(g.getCourse().getName());
 
         int x = 1;
-        for(clientQuestion q : ce.questions){
+        for(Question q : e.getQuestions()){
 
             XWPFParagraph paragraph = document.createParagraph();
 
             ArrayList<String> arr = new ArrayList<>();
-            arr.add(q.right);
-            arr.add(q.wrong1);
-            arr.add(q.wrong2);
-            arr.add(q.wrong3);
+            arr.add(q.getRightAnswer());
+            arr.add(q.getWrongAnswer1());
+            arr.add(q.getWrongAnswer2());
+            arr.add(q.getWrongAnswer3());
             Collections.shuffle(arr);
 
             XWPFRun questionRun = paragraph.createRun();
             questionRun.setBold(true);
-            questionRun.setText(x + ". " + q.question);
+            questionRun.setText(x + ". " + q.getQ());
             x++;
             questionRun.addBreak();
             XWPFRun answersRun = paragraph.createRun();
@@ -641,8 +645,8 @@ public class Commands {
             document.write(out);
             out.close();
             document.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException err) {
+            err.printStackTrace();
         }
 
 
@@ -650,6 +654,8 @@ public class Commands {
         manual.file = out.toByteArray();
         manual.courseID = g.getCourse().getId();
         manual.online = 0;
+        manual.note = e.getNote();
+        manual.teacherNote = e.getTeacherNote();
 
         return gson.toJson(manual);
     }

@@ -21,6 +21,7 @@ public class clientAccess {
     public byte[] file;
 
     public String note;
+    public String teacherNote;
 
     public clientExam e;
     public clientQuestion q;

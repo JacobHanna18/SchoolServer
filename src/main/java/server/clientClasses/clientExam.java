@@ -11,16 +11,18 @@ public class clientExam {
 
     public String subjectName;
     public String note;
+    public String teacherNote;
 
     public byte[] file;
 
     public int online;
 
-    public clientExam(int id, String teacher, String subjectName, String note) {
+    public clientExam(int id, String teacher, String subjectName, String note, String teacherNote) {
         this.id = id;
         this.teacher = teacher;
         this.subjectName = subjectName;
         this.note = note;
+        this.teacherNote = teacherNote;
     }
 
     public clientExam() {
