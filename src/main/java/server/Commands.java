@@ -24,9 +24,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class Commands {
-    public static Session session;
+
+    public Session session;
 
     static Gson gson = new Gson();
+
     public clientUser LogIn (String userID, String password){
         JSONObject js = new JSONObject();
         clientUser cu = new clientUser();
@@ -92,6 +94,7 @@ public class Commands {
 
 
         em.persist(c);
+        em.flush();
         em.getTransaction().commit();
         em.close();
     }
@@ -113,6 +116,7 @@ public class Commands {
         c.setOnline(online);
 
         em.persist(c);
+        em.flush();
         em.getTransaction().commit();
         em.close();
         return gson.toJson(new clientCompletion(true));
@@ -153,6 +157,7 @@ public class Commands {
             newExam.addQuestion(q);
         }
         em.persist(newExam);
+        em.flush();
         em.getTransaction().commit();
         em.close();
     }
@@ -167,6 +172,7 @@ public class Commands {
         newQ.setTeacher(t);
 
         em.persist(newQ);
+        em.flush();
         em.getTransaction().commit();
         em.close();
     }
@@ -262,11 +268,13 @@ public class Commands {
         Request r = new Request();
         r.setExplaination(exp);
         r.setTimeAdded(addedTime);
+        r.setActive(1);
 
         Course c = em.getReference(Course.class,courseID);
         r.setCourse(c);
 
         em.persist(r);
+        em.flush();
         em.getTransaction().commit();
         em.close();
     }
@@ -282,6 +290,7 @@ public class Commands {
         g.setConfirmed(1);
 
         em.persist(g);
+        em.flush();
         em.getTransaction().commit();
         em.close();
     }
@@ -300,6 +309,7 @@ public class Commands {
         g.setConfirmed(1);
 
         em.persist(g);
+        em.flush();
         em.getTransaction().commit();
         em.close();
     }
@@ -415,6 +425,7 @@ public class Commands {
             g.setStudent(s);
             g.setCourse(c);
             session.save(g);
+            session.flush();
             session.getTransaction().commit();
             return g;
         }
@@ -442,11 +453,13 @@ public class Commands {
             em.persist(newA);
         }
 
+        em.flush();
         em.getTransaction().commit();
         em.close();
 
         g.setGrade(rightAnswers / g.getCourse().getExam().getQuestions().size());
         session.persist(g);
+        session.flush();
         session.getTransaction().commit();
     }
 
@@ -516,6 +529,7 @@ public class Commands {
             c.setDuration(c.getDuration() + r.getTimeAdded());
             session.update(c);
         }
+        session.flush();
         session.getTransaction().commit();
     }
 
@@ -563,6 +577,7 @@ public class Commands {
         Grade g = addStudentToCourse(studentID,c.getAccessCode());
         g.setExamFile(file);
         session.update(g);
+        session.flush();
         session.getTransaction().commit();
     }
 

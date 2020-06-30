@@ -20,6 +20,7 @@ import org.hibernate.service.ServiceRegistry;
 public class App
 {
 
+	static public SessionFactory sf;
 
 	private static SessionFactory getSessionFactory() throws HibernateException {
 		Configuration configuration =new Configuration();
@@ -41,20 +42,16 @@ public class App
 		return configuration.buildSessionFactory(serviceRegistry);
 	}
 
+	public static Session getSession(){
+		Session s = sf.openSession();
+		s.beginTransaction();
+		return s;
+	}
+
 	public static void SetUp( )
 	{
-		try {
+		sf = getSessionFactory();
+		System.out.println("Connected to database");
 
-			SessionFactory sessionFactory = getSessionFactory();
-			Commands.session = sessionFactory.openSession();
-			Commands.session.beginTransaction();
-			System.out.println("Connected to database");
-
-		} catch (Exception e) {
-			if (Commands.session != null) {
-				Commands.session.getTransaction().rollback();
-			}
-			e.printStackTrace();
-		}
 	}
 }

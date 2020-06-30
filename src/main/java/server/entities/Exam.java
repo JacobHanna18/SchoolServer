@@ -29,6 +29,7 @@ public class Exam {
     }
 
     String note;
+    String teacherNote;
 
     public Exam(Subject subject) {
         setSubject(subject);

@@ -23,7 +23,6 @@ import server.entities.Question;
 public class SimpleChatServer extends AbstractServer {
 
 	static public Gson gson = new Gson();
-	static public Commands cmd = new Commands();
 
 	public SimpleChatServer(int port) {
 		super(port);
@@ -36,6 +35,8 @@ public class SimpleChatServer extends AbstractServer {
 
 	    System.out.println(msg);
 		clientAccess ca = gson.fromJson(msg.toString(),clientAccess.class);
+		Commands cmd = new Commands();
+		cmd.session = App.getSession();
 		try {
 			switch (ca.op){
 				case logIn:
@@ -123,9 +124,11 @@ public class SimpleChatServer extends AbstractServer {
                     }
 					break;
 				case coursesFromSubjectAndTeacher:
-                    if(client.user.role > 1) {
-                        client.sendToClient(cmd.coursesOfSubjectTeacher(ca.subjectID, ca.teacherID));
-                    }
+                    if(client.user.role == 2) {
+                        client.sendToClient(cmd.coursesOfSubjectTeacher(ca.subjectID, client.user.id));
+                    }else if (client.user.role == 3){
+						client.sendToClient(cmd.coursesOfSubjectTeacher(ca.subjectID, ca.teacherID));
+					}
 					break;
 				case newRequest:
                     if(client.user.role == 2) {
@@ -189,6 +192,9 @@ public class SimpleChatServer extends AbstractServer {
 
 
 			}
+
+			cmd.session.close();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
