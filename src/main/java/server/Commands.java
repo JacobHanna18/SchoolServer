@@ -389,7 +389,7 @@ public class Commands {
     }
 
     public String getGradesOfStudent (String studentID, int onlyConfirmed){
-        String hql = "FROM Grade g WHERE g.student = " + studentID;
+        String hql = "FROM Grade g WHERE g.student = " + studentID + (onlyConfirmed == 1 ? " AND g.confirmed = 1" : "");
         List<Grade> gs = listFrom(hql,Grade.class);
 
         ArrayList <clientGrade> cgs = new ArrayList<>();
@@ -498,6 +498,7 @@ public class Commands {
             Grade g = new Grade();
             g.setStudent(s);
             g.setCourse(c);
+            g.setExamFile(null);
             session.save(g);
             session.flush();
             session.getTransaction().commit();
@@ -530,7 +531,8 @@ public class Commands {
         em.flush();
         em.getTransaction().commit();
         em.close();
-
+        System.out.println(rightAnswers);
+        System.out.println(g.getCourse().getExam().getQuestions().size());
         g.setGrade(100 * (double)rightAnswers / (double)g.getCourse().getExam().getQuestions().size());
         session.persist(g);
         session.flush();
