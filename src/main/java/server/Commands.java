@@ -336,6 +336,8 @@ public class Commands {
         em.close();
     }
 
+
+
     public String getGrade (String studentID, int courseID){
         String hql = "FROM Grade g WHERE g.course = " + courseID + " AND g.student = " + studentID;
 

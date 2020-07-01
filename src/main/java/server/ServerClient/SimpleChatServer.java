@@ -45,6 +45,8 @@ public class SimpleChatServer extends AbstractServer {
 						if(client.user.role == 0){
 							client.tries--;
 						}
+					}else {
+						client.user.role = -1;
 					}
 					client.sendToClient(gson.toJson(client.user));
 					break;
@@ -198,6 +200,18 @@ public class SimpleChatServer extends AbstractServer {
 				case coursesOfSubject:
 					if(client.user.role > 1) {
 						client.sendToClient(cmd.coursesOfSubject(ca.subjectID));
+					}
+					break;
+				case getStudentAnswers:
+					if(client.user.role == 1){
+						client.sendToClient(cmd.getStudentAnswers(ca.courseID,client.user.id));
+					}else{
+						client.sendToClient(cmd.getStudentAnswers(ca.courseID,ca.studentID));
+					}
+					break;
+				case getGradesOfTeacher:
+					if(client.user.role > 1) {
+						client.sendToClient(cmd.getGradesOfTeacher(ca.teacherID));
 					}
 					break;
 
