@@ -83,8 +83,15 @@ public class Commands {
         Course c = session.get(Course.class, courseID);
         Exam e = c.getExam();
 
+        if(e == null){
+            clientExam exam = new clientExam(0, "",c.getSubject().getName(),"","");
+            exam.accessCode = 0;
+            return gson.toJson(exam);
+
+        }
         clientExam exam = new clientExam(e.getId(), e.getTeacher().getName(),e.getSubject().getName(),e.getNote(),e.getTeacherNote());
         exam.online = c.getOnline();
+        exam.accessCode = c.getAccessCode();
         for (Question q : e.getQuestions()){
             exam.questions.add(new clientQuestion(q.getId(), q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3(),q.getTeacher().getName()));
         }
@@ -110,6 +117,10 @@ public class Commands {
         String hql = "FROM Course c WHERE c.AccessCode = " + AccessCode;
         List<Course> l = listFrom(hql,Course.class);
         if(l.size() != 0){
+            return gson.toJson(new clientCompletion(false));
+        }
+        Course c1 = session.get(Course.class,courseID);
+        if(c1.getAccessCode() != 0){
             return gson.toJson(new clientCompletion(false));
         }
         EntityManager em = session.getEntityManagerFactory().createEntityManager();
@@ -443,8 +454,6 @@ public class Commands {
         String hql = "SELECT a FROM Answer a WHERE a.course = " + courseID + " AND a.student = " + studentID;
         List<Answer> arr = listFrom(hql,Answer.class);
 
-        System.out.println(arr.size());
-
         ArrayList<clientQuestion> as = new ArrayList<>();
         for(Answer a : arr){
             Question q = a.getQuestion();
@@ -557,8 +566,6 @@ public class Commands {
         em.flush();
         em.getTransaction().commit();
         em.close();
-        System.out.println(rightAnswers);
-        System.out.println(g.getCourse().getExam().getQuestions().size());
         g.setGrade(100 * (double)rightAnswers / (double)g.getCourse().getExam().getQuestions().size());
         g.setConfirmed(0);
         session.persist(g);
@@ -653,6 +660,18 @@ public class Commands {
             cs.add(new clientCourse(s.getName(),s.getId(),s.getOnline(),avg));
         }
         return gson.toJson(cs);
+    }
+
+    public String isCourseActive (int courseID){
+        String hql = "FROM Course c WHERE c.id = " + courseID;
+        Course c = getFirst(hql,Course.class);
+
+        int endTime = c.getStartTime() + c.getDuration();
+        int currentTime = ((int) (System.currentTimeMillis() / 1000));
+        System.out.println(c.getStartTime());
+        System.out.println(endTime);
+        System.out.println(currentTime);
+        return gson.toJson(c.getStartTime() <= currentTime && endTime >= currentTime);
     }
 
     public String coursesByTeacher (String teacherID, int onlyConfirmed){

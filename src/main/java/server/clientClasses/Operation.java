@@ -47,7 +47,7 @@ public enum Operation {
     ,courseExam
 
     //Select exam from course
-    //TEACHER : (courseID) -> void
+    //TEACHER : (courseID, examID) -> void
     ,selectExamForCourse
 
     // set access code duration online
@@ -133,4 +133,8 @@ public enum Operation {
     // STUDENT : (courseID) -> [clientQuestion]
     // TEACHER/PRINCIPLE : (courseID, studentID) -> [clientQuestion]
     ,getStudentAnswers
+
+    //return if course exam is active
+    //TEACHER/PRINCIPLE : (courseID) -> Boolean
+    ,isCourseActive
 }

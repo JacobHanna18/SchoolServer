@@ -19,6 +19,7 @@ public class clientExam {
 
     public int startTime;
     public int duration;
+    public int accessCode;
 
     public clientExam(int id, String teacher, String subjectName, String note, String teacherNote) {
         this.id = id;

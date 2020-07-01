@@ -158,7 +158,9 @@ public class Course {
     }
 
     public boolean isActive(){
-        return !((System.currentTimeMillis() / 1000) - startTime > duration);
+        int endTime = startTime + duration;
+        int currentTime = ((int)System.currentTimeMillis() / 1000);
+        return startTime <= currentTime && endTime >= currentTime;
     }
 
 //    public void addStudent (Student s){

@@ -72,7 +72,6 @@ public class SimpleChatServer extends AbstractServer {
                 case subjectList:
 
                     client.sendToClient(cmd.allSubjects());
-					System.out.println(cmd.allSubjects());
                     break;
                 case examList:
                     if(client.user.role > 1){
@@ -216,6 +215,11 @@ public class SimpleChatServer extends AbstractServer {
 				case getGradesOfTeacher:
 					if(client.user.role > 1) {
 						client.sendToClient(cmd.getGradesOfTeacher(ca.teacherID));
+					}
+					break;
+				case isCourseActive:
+					if(client.user.role>1){
+						client.sendToClient(cmd.isCourseActive(ca.courseID));
 					}
 					break;
 
