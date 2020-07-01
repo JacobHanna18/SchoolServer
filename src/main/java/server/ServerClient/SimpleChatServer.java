@@ -70,7 +70,9 @@ public class SimpleChatServer extends AbstractServer {
                     }
 					break;
                 case subjectList:
+
                     client.sendToClient(cmd.allSubjects());
+					System.out.println(cmd.allSubjects());
                     break;
                 case examList:
                     if(client.user.role > 1){
@@ -168,7 +170,7 @@ public class SimpleChatServer extends AbstractServer {
 					break;
 				case submitOnlineExam:
 				    if(client.user.role == 1){
-                        cmd.submitOnlineExam(ca.arr,ca.courseID,client.user.id);
+						client.sendToClient(cmd.submitOnlineExam(ca.arr,ca.courseID,client.user.id));
                     }
 					break;
 				case requestList:

@@ -461,6 +461,11 @@ public class Commands {
         if(g == null){
             return "";
         }
+
+        if(g.isConfirmed() != -1){
+            return  "";
+        }
+
         Course c = g.getCourse();
 
         clientExam ce = new clientExam();
@@ -507,6 +512,8 @@ public class Commands {
             Grade g = new Grade();
             g.setStudent(s);
             g.setCourse(c);
+            g.setConfirmed(-1);
+            g.setGrade(0);
             g.setExamFile(null);
             session.save(g);
             session.flush();
@@ -532,6 +539,10 @@ public class Commands {
 
         Grade g = addStudentToCourse(studentID,c.getAccessCode());
 
+        if(g.isConfirmed() !=-1){
+            return gson.toJson(new clientCompletion(false));
+        }
+
         for (clientAnswer ca : arr){
             rightAnswers += (ca.answer == 1 ? 1 : 0);
             Answer newA = new Answer();
@@ -549,6 +560,7 @@ public class Commands {
         System.out.println(rightAnswers);
         System.out.println(g.getCourse().getExam().getQuestions().size());
         g.setGrade(100 * (double)rightAnswers / (double)g.getCourse().getExam().getQuestions().size());
+        g.setConfirmed(0);
         session.persist(g);
         session.flush();
         session.getTransaction().commit();
@@ -677,7 +689,13 @@ public class Commands {
         }
 
         Grade g = addStudentToCourse(studentID,c.getAccessCode());
+
+        if(g.isConfirmed() !=-1){
+            return gson.toJson(new clientCompletion(false));
+        }
+
         g.setExamFile(file);
+        g.setConfirmed(0);
         session.update(g);
         session.flush();
         session.getTransaction().commit();
