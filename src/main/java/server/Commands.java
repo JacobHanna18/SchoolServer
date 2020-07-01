@@ -80,8 +80,14 @@ public class Commands {
 
     public String examFromCourse (int courseID){
         Course c = session.get(Course.class, courseID);
+        Exam e = c.getExam();
 
-        return getExam(c.getExam().getId());
+        clientExam exam = new clientExam(e.getId(), e.getTeacher().getName(),e.getSubject().getName(),e.getNote(),e.getTeacherNote());
+        exam.online = c.getOnline();
+        for (Question q : e.getQuestions()){
+            exam.questions.add(new clientQuestion(q.getId(), q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3(),q.getTeacher().getName()));
+        }
+        return gson.toJson(exam);
     }
 
     public void selectExam (int examID, int courseID){

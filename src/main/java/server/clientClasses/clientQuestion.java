@@ -18,6 +18,7 @@ public class clientQuestion {
         this.teacher = teacher;
     }
 
+
     public clientQuestion(int id, String question, String right, String wrong1, String wrong2, String wrong3) {
         this.id = id;
         this.question = question;
