@@ -224,9 +224,9 @@ public class SimpleChatServer extends AbstractServer {
 					break;
 				case coursesFromTeacherExams:
 					if(client.user.role == 2) {
-						client.sendToClient(cmd.coursesFromTeacherExams(client.user.id));
+						client.sendToClient(cmd.coursesFromTeacherExams(ca.subjectID, client.user.id));
 					}else if (client.user.role == 3){
-						client.sendToClient(cmd.coursesFromTeacherExams(ca.teacherID));
+						client.sendToClient(cmd.coursesFromTeacherExams(ca.subjectID, ca.teacherID));
 					}
 
 

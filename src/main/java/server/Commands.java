@@ -663,12 +663,12 @@ public class Commands {
         return gson.toJson(cs);
     }
 
-    public String coursesFromTeacherExams (String teacherID){
-        String hql = "SELECT c FROM Course c WHERE c.exam.teacher = " + teacherID;
+    public String coursesFromTeacherExams (int subjectID, String teacherID){
+        String hql = "SELECT c FROM Course c WHERE c.exam.teacher = " + teacherID + " AND c.subject = " + subjectID;
         List<Course> arr = listFrom(hql,Course.class);
         ArrayList<clientCourse> cs = new ArrayList<>();
         for(Course c : arr){
-            cs.add(new clientCourse(c.getName(),c.getId(),c.getOnline()));
+            cs.add(new clientCourse(c.getName(),c.getId(),c.getExam().getId(),c.getTeacher().getName()));
         }
         return gson.toJson(cs);
     }
