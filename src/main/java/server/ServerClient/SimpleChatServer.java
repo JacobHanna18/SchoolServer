@@ -12,8 +12,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import server.clientClasses.*;
 
-import java.net.InetAddress;
-
 
 import server.clientClasses.*;
 
@@ -39,8 +37,6 @@ public class SimpleChatServer extends AbstractServer {
 		clientAccess ca = gson.fromJson(msg.toString(),clientAccess.class);
 		Commands cmd = new Commands();
 		cmd.session = App.getSession();
-
-
 		try {
 			switch (ca.op){
 				case logIn:
@@ -49,8 +45,6 @@ public class SimpleChatServer extends AbstractServer {
 						if(client.user.role == 0){
 							client.tries--;
 						}
-					}else {
-						client.user.role = -1;
 					}
 					client.sendToClient(gson.toJson(client.user));
 					break;
@@ -206,13 +200,8 @@ public class SimpleChatServer extends AbstractServer {
 						client.sendToClient(cmd.coursesOfSubject(ca.subjectID));
 					}
 					break;
-				case getStudentAnswers:
-					if(client.user.role == 1){
-						client.sendToClient(cmd.getStudentAnswers(ca.courseID,client.user.id));
-					}else{
-						client.sendToClient(cmd.getStudentAnswers(ca.courseID,ca.studentID));
-					}
-					break;
+
+
 			}
 
 			cmd.session.close();
@@ -242,10 +231,8 @@ public class SimpleChatServer extends AbstractServer {
 
 		if (args.length != 1) {
 			SimpleChatServer server = new SimpleChatServer(Integer.parseInt("1000"));
-
 			server.listen();
-			System.out.println("Server " + InetAddress.getLocalHost().getHostAddress() + " connected");
-
+			System.out.println("Server connected");
 		} else {
 			SimpleChatServer server = new SimpleChatServer(Integer.parseInt(args[0]));
 			server.listen();

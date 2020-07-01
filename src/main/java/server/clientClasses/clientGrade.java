@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class clientGrade {
     public clientUser student;
+    public String studentname;
     public double grade;
     public clientCourse course;
     public String courseName;

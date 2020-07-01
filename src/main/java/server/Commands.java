@@ -216,6 +216,7 @@ public class Commands {
         cg.course = new clientCourse(g.getCourse().getName(), g.getCourse().getId(),g.getCourse().getOnline());
         cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
         cg.courseName = g.getCourse().getName();
+        cg.studentname = g.getStudent().getName();
 
         for (Answer a : l){
             clientAnswer ca = new clientAnswer(a.getAnswer(),a.getQuestion().getId(), a.getCourse().getId());
@@ -344,6 +345,7 @@ public class Commands {
         cg.course = new clientCourse(g.getCourse().getName(), g.getCourse().getId(),g.getCourse().getOnline());
         cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
         cg.courseName = g.getCourse().getName();
+        cg.studentname = g.getStudent().getName();
         return gson.toJson(cg);
     }
 
@@ -359,6 +361,25 @@ public class Commands {
             cg.course = new clientCourse(g.getCourse().getName(), g.getCourse().getId(),g.getCourse().getOnline());
             cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
             cg.courseName = g.getCourse().getName();
+            cg.studentname = g.getStudent().getName();
+            cgs.add(cg);
+        }
+
+        return gson.toJson(cgs);
+    }
+    public String getGradesOfTeacher (String teacherID){
+        String hql = "FROM Grade g WHERE g.course.teacher = " + teacherID;
+        List<Grade> gs = listFrom(hql,Grade.class);
+
+        ArrayList <clientGrade> cgs = new ArrayList<>();
+
+        for(Grade g : gs){
+            clientGrade cg = new clientGrade();
+            cg.grade = g.getGrade();
+            cg.course = new clientCourse(g.getCourse().getName(), g.getCourse().getId(),g.getCourse().getOnline());
+            cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
+            cg.courseName = g.getCourse().getName();
+            cg.studentname = g.getStudent().getName();
             cgs.add(cg);
         }
 
@@ -383,6 +404,7 @@ public class Commands {
             cg.course = new clientCourse(g.getCourse().getName(), g.getCourse().getId(),g.getCourse().getOnline());
             cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
             cg.courseName = g.getCourse().getName();
+            cg.studentname = g.getStudent().getName();
             cgs.add(cg);
         }
 
@@ -638,6 +660,7 @@ public class Commands {
         cg.courseName = g.getCourse().getName();
         cg.file = g.getExamFile();
         cg.grade = g.getGrade();
+        cg.studentname = g.getStudent().getName();
         return gson.toJson(cg);
     }
 
