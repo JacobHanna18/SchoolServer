@@ -22,6 +22,8 @@ import server.entities.Question;
 
 public class SimpleChatServer extends AbstractServer {
 
+	static public SimpleChatServer server = new SimpleChatServer(Integer.parseInt("1000"));
+
 	static public Gson gson = new Gson();
 
 	public SimpleChatServer(int port) {
@@ -181,7 +183,7 @@ public class SimpleChatServer extends AbstractServer {
 					break;
 				case submitManualExam:
 					if(client.user.role == 1){
-						cmd.submitManualExam(ca.file,ca.courseID,client.user.id);
+						client.sendToClient(cmd.submitManualExam(ca.file,ca.courseID,client.user.id));
 					}
 					break;
 				case downloadManualExam:
@@ -243,14 +245,9 @@ public class SimpleChatServer extends AbstractServer {
 
 		App.SetUp();
 
-		if (args.length != 1) {
-			SimpleChatServer server = new SimpleChatServer(Integer.parseInt("1000"));
-			server.listen();
-			System.out.println("Server connected");
-		} else {
-			SimpleChatServer server = new SimpleChatServer(Integer.parseInt(args[0]));
-			server.listen();
-		}
+		server.listen();
+		System.out.println("Server connected");
+
 	}
 
 }

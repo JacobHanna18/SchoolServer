@@ -9,6 +9,7 @@ import org.hibernate.Session;
 import org.hibernate.jpa.boot.spi.EntityManagerFactoryBuilder;
 import org.hibernate.query.Query;
 import server.App;
+import server.ServerClient.SimpleChatServer;
 import server.clientClasses.*;
 import server.entities.*;
 
@@ -477,6 +478,8 @@ public class Commands {
 
         ce.online = c.getOnline();
         ce.courseID = c.getId();
+        ce.startTime=c.getStartTime();
+        ce.duration=c.getDuration();
 
         Exam e = c.getExam();
         ce.teacherNote = e.getTeacherNote();
@@ -513,7 +516,13 @@ public class Commands {
         return l2.get(0);
     }
 
-    public void submitOnlineExam (ArrayList<clientAnswer> arr, int courseID, String studentID){
+    public String submitOnlineExam (ArrayList<clientAnswer> arr, int courseID, String studentID){
+
+        Course cc = session.get(Course.class,courseID);
+
+        if(!cc.isActive()){
+            return gson.toJson(new clientCompletion(false));
+        }
 
         int rightAnswers = 0;
         EntityManager em = session.getEntityManagerFactory().createEntityManager();
@@ -543,6 +552,7 @@ public class Commands {
         session.persist(g);
         session.flush();
         session.getTransaction().commit();
+        return gson.toJson(new clientCompletion(true));
     }
 
     public String allTeachers (){
@@ -610,6 +620,11 @@ public class Commands {
             Course c = r.getCourse();
             c.setDuration(c.getDuration() + r.getTimeAdded());
             session.update(c);
+            clientAccess ca = new clientAccess();
+            ca.addedTime = r.getTimeAdded();
+            ca.courseID = r.getCourse().getId();
+            ca.op = Operation.newRequest;
+            SimpleChatServer.server.sendToAllClients(gson.toJson(ca));
         }
         session.flush();
         session.getTransaction().commit();
@@ -654,13 +669,19 @@ public class Commands {
         return gson.toJson(cs);
     }
 
-    public void submitManualExam (byte[] file, int courseID, String studentID){
+    public String submitManualExam (byte[] file, int courseID, String studentID){
         Course c = session.get(Course.class,courseID);
+
+        if(!c.isActive()){
+            return gson.toJson(new clientCompletion(false));
+        }
+
         Grade g = addStudentToCourse(studentID,c.getAccessCode());
         g.setExamFile(file);
         session.update(g);
         session.flush();
         session.getTransaction().commit();
+        return gson.toJson(new clientCompletion(true));
     }
 
     public String downloadStudentExam(String studentID, int courseID){
@@ -734,6 +755,8 @@ public class Commands {
         manual.online = 0;
         manual.note = e.getNote();
         manual.teacherNote = e.getTeacherNote();
+        manual.duration = g.getCourse().getDuration();
+        manual.startTime = g.getCourse().getStartTime();
 
         return gson.toJson(manual);
     }

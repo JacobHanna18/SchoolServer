@@ -17,6 +17,9 @@ public class clientExam {
 
     public int online;
 
+    public int startTime;
+    public int duration;
+
     public clientExam(int id, String teacher, String subjectName, String note, String teacherNote) {
         this.id = id;
         this.teacher = teacher;

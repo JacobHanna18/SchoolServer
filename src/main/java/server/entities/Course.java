@@ -157,6 +157,10 @@ public class Course {
         g.setCourse(this);
     }
 
+    public boolean isActive(){
+        return !((System.currentTimeMillis() / 1000) - startTime > duration);
+    }
+
 //    public void addStudent (Student s){
 //        students.add(s);
 //        s.getCourses().add(this);
