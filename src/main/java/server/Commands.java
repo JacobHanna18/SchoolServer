@@ -271,6 +271,7 @@ public class Commands {
         }
         return gson.toJson(arr);
     }
+
     public String coursesOfSubject(int subjectId){
         String hql = "FROM Course c WHERE c.subject = " + subjectId ;
         List<Course> l = listFrom(hql,Course.class);
@@ -407,9 +408,28 @@ public class Commands {
         return ce;
     }
 
+    public String getStudentAnswers (int courseID, String studentID){
+        String hql = "SELECT a FROM Answer a WHERE a.course = " + courseID + " AND a.student = " + studentID;
+        List<Answer> arr = listFrom(hql,Answer.class);
+
+        System.out.println(arr.size());
+
+        ArrayList<clientQuestion> as = new ArrayList<>();
+        for(Answer a : arr){
+            Question q = a.getQuestion();
+            clientQuestion cq = new clientQuestion(q.getId(),q.getQ(),q.getRightAnswer(),q.getWrongAnswer1(),q.getWrongAnswer2(),q.getWrongAnswer3());
+            cq.studentAnswer = a.getAnswer();
+            as.add(cq);
+        }
+        return gson.toJson(as);
+    }
+
     public String takeExam (int AccessCode, String studentID){
 
         Grade g = addStudentToCourse(studentID,AccessCode);
+        if(g == null){
+            return "";
+        }
         Course c = g.getCourse();
 
         clientExam ce = new clientExam();
@@ -439,6 +459,12 @@ public class Commands {
 
     public Grade addStudentToCourse (String studentID, int AccessCode){
         String hql = "FROM Course c WHERE c.AccessCode = " + AccessCode;
+        List<Course> cs = listFrom(hql, Course.class);
+
+        if(cs.size() == 0){
+            return null;
+        }
+
         Course c = getFirst(hql, Course.class);
 
         String hql2 = "SELECT g FROM Grade g WHERE g.course = " + c.getId() + " AND g.student = " + studentID;

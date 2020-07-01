@@ -124,4 +124,9 @@ public enum Operation {
     // courses list by subject
     // TEACHER/PRINCIPLE : (subjectID) -> [clientCourse]
     ,coursesOfSubject
+
+    // courses list by subject
+    // STUDENT : (courseID) -> [clientQuestion]
+    // TEACHER/PRINCIPLE : (courseID, studentID) -> [clientQuestion]
+    ,getStudentAnswers
 }
