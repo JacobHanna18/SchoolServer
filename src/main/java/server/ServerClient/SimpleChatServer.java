@@ -105,7 +105,7 @@ public class SimpleChatServer extends AbstractServer {
 					break;
 				case selectExamForCourse:
                     if(client.user.role == 2) {
-                        cmd.selectExam(ca.examID, ca.courseID);
+						client.sendToClient(cmd.selectExam(ca.examID, ca.courseID));
                     }
 					break;
 				case startExam:
@@ -222,6 +222,12 @@ public class SimpleChatServer extends AbstractServer {
 						client.sendToClient(cmd.isCourseActive(ca.courseID));
 					}
 					break;
+				case coursesFromTeacherExams:
+					if(client.user.role == 2) {
+						client.sendToClient(cmd.coursesFromTeacherExams(client.user.id));
+					}else if (client.user.role == 3){
+						client.sendToClient(cmd.coursesFromTeacherExams(ca.teacherID));
+					}
 
 
 			}

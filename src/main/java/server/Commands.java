@@ -98,7 +98,7 @@ public class Commands {
         return gson.toJson(exam);
     }
 
-    public void selectExam (int examID, int courseID){
+    public String selectExam (int examID, int courseID){
         EntityManager em = session.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
 
@@ -111,6 +111,7 @@ public class Commands {
         em.flush();
         em.getTransaction().commit();
         em.close();
+        return gson.toJson(new clientCompletion(true));
     }
 
     public String startExam (int courseID, int AccessCode, int duration, int online){
@@ -658,6 +659,16 @@ public class Commands {
             Course s = (Course)o[0];
             Double avg = (Double) o[1];
             cs.add(new clientCourse(s.getName(),s.getId(),s.getOnline(),avg));
+        }
+        return gson.toJson(cs);
+    }
+
+    public String coursesFromTeacherExams (String teacherID){
+        String hql = "SELECT c FROM Course c WHERE c.exam.teacher = " + teacherID;
+        List<Course> arr = listFrom(hql,Course.class);
+        ArrayList<clientCourse> cs = new ArrayList<>();
+        for(Course c : arr){
+            cs.add(new clientCourse(c.getName(),c.getId(),c.getOnline()));
         }
         return gson.toJson(cs);
     }

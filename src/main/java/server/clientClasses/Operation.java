@@ -137,4 +137,9 @@ public enum Operation {
     //return if course exam is active
     //TEACHER/PRINCIPLE : (courseID) -> Boolean
     ,isCourseActive
+
+    //return courses that use teacher's exam
+    //TEACHER : () -> [clientExam]
+    //PRINCIPLE : (teacherID) -> [clientExam]
+    ,coursesFromTeacherExams
 }
