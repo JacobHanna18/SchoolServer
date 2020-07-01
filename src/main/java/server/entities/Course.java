@@ -159,7 +159,7 @@ public class Course {
 
     public boolean isActive(){
         int endTime = startTime + duration;
-        int currentTime = ((int)System.currentTimeMillis() / 1000);
+        int currentTime = ((int) (System.currentTimeMillis() / 1000));
         return startTime <= currentTime && endTime >= currentTime;
     }
 
