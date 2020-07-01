@@ -668,9 +668,6 @@ public class Commands {
 
         int endTime = c.getStartTime() + c.getDuration();
         int currentTime = ((int) (System.currentTimeMillis() / 1000));
-        System.out.println(c.getStartTime());
-        System.out.println(endTime);
-        System.out.println(currentTime);
         return gson.toJson(c.getStartTime() <= currentTime && endTime >= currentTime);
     }
 
