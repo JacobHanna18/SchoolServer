@@ -16,6 +16,9 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 public class App
 {
@@ -50,6 +53,7 @@ public class App
 
 	public static void SetUp( )
 	{
+		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
 		sf = getSessionFactory();
 		System.out.println("Connected to database");
 

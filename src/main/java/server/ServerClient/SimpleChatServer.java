@@ -1,23 +1,17 @@
 package server.ServerClient;
 import com.google.gson.Gson;
-import org.apache.poi.xwpf.usermodel.*;
+
 import server.App;
 import server.Commands;
 import server.Server.AbstractServer ;
 import server.Server.ConnectionToClient ;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import server.clientClasses.*;
-
 
 import server.clientClasses.*;
 
-
-import server.entities.Grade;
-import server.entities.Question;
 
 
 public class SimpleChatServer extends AbstractServer {
@@ -258,7 +252,8 @@ public class SimpleChatServer extends AbstractServer {
 		App.SetUp();
 
 		server.listen();
-		System.out.println("Server connected");
+
+		System.out.println("Server " + InetAddress.getLocalHost().getHostAddress() + " with port " + server.getPort()  + " connected");
 
 	}
 
