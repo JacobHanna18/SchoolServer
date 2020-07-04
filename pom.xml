@@ -55,8 +55,6 @@
 			<version>4.1.2</version>
 		</dependency>
 
-
-
 	</dependencies>
 
 	<build>
@@ -111,12 +109,16 @@
 					<artifactId>exec-maven-plugin</artifactId>
 					<version>1.6.0</version>
 					<configuration>
-						<mainClass>server.App</mainClass>
+						<addClasspath>true</addClasspath>
+						<classpathPrefix>lib/</classpathPrefix>
+						<mainClass>server.SimpleChatServer</mainClass>
 						<executable>java</executable>
 						<arguments>
 						</arguments>
 					</configuration>
 				</plugin>
+
+
 			</plugins>
 		</pluginManagement>
 	</build>

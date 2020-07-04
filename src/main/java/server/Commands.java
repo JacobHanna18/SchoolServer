@@ -6,20 +6,15 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.hibernate.Session;
-import org.hibernate.jpa.boot.spi.EntityManagerFactoryBuilder;
 import org.hibernate.query.Query;
-import server.App;
-import server.ServerClient.SimpleChatServer;
 import server.clientClasses.*;
 import server.entities.*;
 
 import org.json.simple.JSONObject;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

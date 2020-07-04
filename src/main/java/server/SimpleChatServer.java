@@ -1,8 +1,6 @@
-package server.ServerClient;
+package server;
 import com.google.gson.Gson;
 
-import server.App;
-import server.Commands;
 import server.Server.AbstractServer ;
 import server.Server.ConnectionToClient ;
 
@@ -235,7 +233,6 @@ public class SimpleChatServer extends AbstractServer {
 	  }
 	@Override
 	protected synchronized void clientDisconnected(ConnectionToClient client) {
-		// TODO Auto-generated method stub
 		
 		System.out.println("Client Disconnected.");
 		super.clientDisconnected(client);
