@@ -28,6 +28,10 @@ public class Grade {
         this.confirmed = confirmed;
     }
 
+    public int getConfirmed() {
+        return confirmed;
+    }
+
     int confirmed;
 
     public byte[] getExamFile() {

@@ -383,6 +383,7 @@ public class Commands {
             cg.student = new clientUser(g.getStudent().getName(), g.getStudent().getId());
             cg.courseName = g.getCourse().getName();
             cg.studentname = g.getStudent().getName();
+            cg.confirmed = g.getConfirmed();
             cgs.add(cg);
         }
 
@@ -466,6 +467,17 @@ public class Commands {
     }
 
     public String takeExam (int AccessCode, String studentID){
+
+        String hql = "FROM Course c WHERE c.AccessCode = " + AccessCode;
+        List<Course> cl = listFrom(hql,Course.class);
+        if(cl.size() == 0){
+            return "";
+        }
+
+        Course c1 = cl.get(0);
+        if(! c1.isActive()){
+            return "";
+        }
 
         Grade g = addStudentToCourse(studentID,AccessCode);
         if(g == null){
@@ -732,6 +744,9 @@ public class Commands {
     public String downloadStudentExam(String studentID, int courseID){
         String hql = "SELECT g FROM Grade g WHERE g.student = " + studentID + " AND g.course = " + courseID;
         Grade g = getFirst(hql, Grade.class);
+        if(g == null || g.getExamFile() == null){
+            return "";
+        }
         clientGrade cg = new clientGrade();
         cg.courseName = g.getCourse().getName();
         cg.file = g.getExamFile();
@@ -753,6 +768,15 @@ public class Commands {
         r1.setBold(true);
         r1.setFontSize(24);
         r1.setText(g.getCourse().getName());
+
+        XWPFParagraph p2 = document.createParagraph();
+        p2.setAlignment(ParagraphAlignment.CENTER);
+        XWPFRun r2 = p2.createRun();
+        r2.setBold(false);
+        r2.setFontSize(12);
+        r2.setText("Teacher Note:");
+        r2.addBreak();
+        r2.setText(e.getNote());
 
         int x = 1;
         for(Question q : e.getQuestions()){

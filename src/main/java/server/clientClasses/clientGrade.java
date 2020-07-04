@@ -11,4 +11,5 @@ public class clientGrade {
     public int online;
     public byte[] file;
     public ArrayList<clientAnswer> answers = new ArrayList<>();
+    public int confirmed;
 }
