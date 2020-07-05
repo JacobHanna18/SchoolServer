@@ -233,7 +233,6 @@ public class SimpleChatServer extends AbstractServer {
 	  }
 	@Override
 	protected synchronized void clientDisconnected(ConnectionToClient client) {
-		
 		System.out.println("Client Disconnected.");
 		super.clientDisconnected(client);
 	}
